@@ -19,3 +19,4 @@ jobs:
           dir: '.'
           dockerfile: 'Dockerfile'
           exposed_port: '5000'
+          compose_file: 'docker-compose.yml'
