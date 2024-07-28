@@ -1,0 +1,46 @@
+name: "HNG-ACTIONS"
+description: "A tool used in workflow scrip to automate the deployment of each pull request"
+
+
+inputs:
+  server_host:
+    description: SSH host of the server
+    required: true
+  server_username: 
+    description: SSH username 
+    required: true
+  server_password:
+    description: SSH password 
+    required: true
+  server_port:
+    description: SSH port
+    required: true
+  dir:
+    description: Directory in the repository where the Dockerfile or start command is located
+    required: true
+  Dockerfile:
+    description: Path to the Dockerfile
+    required: true
+  start_command:
+    description: Command to start the application if Dockerfile is not provided
+    required: true
+  exposed_port:
+    description: Port to expose in the container
+    required: true
+  env:
+    description: Environment variables to pass to the container
+    required: true
+
+
+
+
+
+      
+
+
+
+
+
+
+
+        
