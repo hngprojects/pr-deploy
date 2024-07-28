@@ -16,7 +16,7 @@ inputs:
     required: true
   dir:
     description: Directory in the repository where the Dockerfile or start command is located
-    required: true
+    default: "./"
   dockerfile:
     description: Path to the Dockerfile (optional)
     required: false
@@ -32,22 +32,35 @@ inputs:
   env:
     description: Environment variables to pass to the container
     required: true
+  branch_name:
+    description: The branch name for the github repository that made a pull request
+    required: true
+  repo_url:
+    description: The repository that made the pull request
+    required: true
+  pr_number:
+    description: The pull request number for the trigger.
+    required: true
+
+
+# outputs:
+#   status:
+#     description: Status of the deployment
+#     required: true
 
 runs:
   using: 'composite'
   steps:
-    - name: Check out the repository
-      uses: actions/checkout@v2
-
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Run entrypoint.sh
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
-      run: .entrypoint.sh
       env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+    - name: Run entrypoint.sh
+      run: entrypoint.sh
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
         SERVER_HOST: ${{ inputs.server_host }}
         SERVER_USERNAME: ${{ inputs.server_username }}
         SERVER_PASSWORD: ${{ inputs.server_password }}
@@ -58,3 +71,6 @@ runs:
         COMPOSE_FILE: ${{ inputs.compose_file }}
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENV_VARS: ${{ inputs.env }}
+        REPO_URL: ${{ inputs.repo_url }}
+        BRANCH_NAME: ${{ inputs.branch_name }}
+        PR_NUMBER: ${{ inputs.pr_number }}
