@@ -1,6 +1,5 @@
 name: "HNG-ACTIONS"
-description: "A tool used in workflow scrip to automate the deployment of each pull request"
-
+description: "A tool used in workflow script to automate the deployment of each pull request"
 
 inputs:
   server_host:
@@ -18,12 +17,15 @@ inputs:
   dir:
     description: Directory in the repository where the Dockerfile or start command is located
     required: true
-  Dockerfile:
-    description: Path to the Dockerfile
-    required: true
+  dockerfile:
+    description: Path to the Dockerfile (optional)
+    required: false
   start_command:
-    description: Command to start the application if Dockerfile is not provided
-    required: true
+    description: Command to start the application if Dockerfile is not provided (optional)
+    required: false
+  compose_file:
+    description: Path to the docker-compose.yml file (optional)
+    required: false
   exposed_port:
     description: Port to expose in the container
     required: true
@@ -31,16 +33,28 @@ inputs:
     description: Environment variables to pass to the container
     required: true
 
+runs:
+  using: 'composite'
+  steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
 
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-
-
-      
-
-
-
-
-
-
-
-        
+    - name: Run entrypoint.sh
+      shell: bash
+      run: .entrypoint.sh
+      env:
+        SERVER_HOST: ${{ inputs.server_host }}
+        SERVER_USERNAME: ${{ inputs.server_username }}
+        SERVER_PASSWORD: ${{ inputs.server_password }}
+        SERVER_PORT: ${{ inputs.server_port }}
+        DIR: ${{ inputs.dir }}
+        DOCKERFILE: ${{ inputs.dockerfile }}
+        START_COMMAND: ${{ inputs.start_command }}
+        COMPOSE_FILE: ${{ inputs.compose_file }}
+        EXPOSED_PORT: ${{ inputs.exposed_port }}
+        ENV_VARS: ${{ inputs.env }}
