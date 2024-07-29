@@ -73,23 +73,19 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     sleep 5
     SERVEO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     cat serveo_output.log
-  
+
+    sudo apt install jq -y
     
     # Function to add a comment to the pull request
     add_comment_to_pr() {
-      # local comment="$1"
-      # local pr_number="${PR}"
-      # local repo_owner="${REPO_OWNER}"
-      # local repo_name="${REPO_NAME}"
-      # local token="${GITHUB_TOKEN}"
       export deployment_url=\${SERVEO_URL}
+      echo "Deployment URL: \${deployment_url}"
     
-        echo "Deployment URL: \${deployment_url}"
-    
-        curl -s -H "Authorization: token $GITHUB_TOKEN" \
-        -X POST \
-        -d "{\"body\": \"Deployment URL: \${deployment_url} https://212fa7c9df92163709027b045388a1cd.serveo.net/\"}" \
-        "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
+      # Use jq to ensure proper JSON formatting
+      curl -s -H "Authorization: token $GITHUB_TOKEN" \
+      -X POST \
+      -d \$(jq -nc --arg url "\$deployment_url" '{"body": "Deployment URL: \($url) https://212fa7c9df92163709027b045388a1cd.serveo.net/"}') \
+      "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments" 
     }
     add_comment_to_pr 
 EOF
