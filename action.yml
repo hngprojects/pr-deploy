@@ -71,6 +71,6 @@ runs:
         COMPOSE_FILE: ${{ inputs.compose_file }}
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENV_VARS: ${{ inputs.env }}
-        REPO_URL: "https://github.com/hngprojects/pr-deploy"
+        REPO_URL: "https://github.com/${{ github.repo }}"
         BRANCH_NAME: ${{ inputs.branch_name }}
         PR_NUMBER: ${{ inputs.pr_number }}
