@@ -22,9 +22,12 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
         sudo apt-get update
         sudo apt-get install python3 -y
     fi
+
+    # getting timestamp
+    TIMESTAMP=$(date "+%Y%m%d%H%M%S")
     
     # image name
-    IMAGE_NAME="${REPO_DIR}-${PR}"
+    IMAGE_NAME="${REPO_DIR}-${PR}-\${TIMESTAMP}"
 
     # free port
     FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
