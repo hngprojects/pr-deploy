@@ -13,9 +13,36 @@ These tool made use of two files named:
 - action.yml
 - entrypoint.sh
 
-The `.yml` file declares the inputs needed to deploy the pull request in isolated docker containers. 
+`action.yml`:
+The file declares the inputs needed to deploy the pull request in isolated docker containers. 
 
-The shell script with the aid of the inputs retrieved by the actions.yml file automates the deployment process.
+`entrypoint.sh`:
+With the aid of the inputs retrieved by the actions.yml file, the shell script automates the deployment process.
+
+### How to Contribute
+1. **Fork the Repository**: Start by forking the repository to your GitHub account.
+
+2. **Create a New Branch**: Create a branch for your feature or bugfix
+   ```
+    git checkout -b feature/your-feature-name
+   ```
+3. **Modify Inputs**: If adding new inputs or modifying existing ones:
+   - Ensure they are documented in action.yml.
+   - Update the shell script to handle these inputs appropriately.
+
+4. **Update Documentation**: Reflect any changes in the README.md file.
+
+5. **Commit Your Changes**: With a descriptive message:
+   ```
+   git commit -m 'Add feature: your-feature-name'
+
+   ```
+
+6. **Push to Your Branch**:
+   ```
+   git push origin feature/your-feature-name
+
+   ```
 
  
  
