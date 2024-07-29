@@ -55,7 +55,7 @@ runs:
   using: 'composite'
   steps:
     - name: Run entrypoint.sh
-      run: chmod +x entrypoint.sh && ./entrypoint.sh
+      run: chmod +x entrypoint.sh && ./entrypoint.sh ${{ github.event.action }} ${{ github.event.number }}
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
