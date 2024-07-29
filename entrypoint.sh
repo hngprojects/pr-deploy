@@ -57,15 +57,13 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
         if [ -f "$DOCKERFILE" ]; then
             echo "Dockerfile detected..."
             sudo docker build --label branch=$GITHUB_HEAD_REF -t \$IMAGE_NAME .
-            sudo docker run -d --label branch=$GITHUB_HEAD_REF -p $FREE_PORT:$EXPOSED_PORT \$IMAGE_NAME
+            sudo docker run -d --label branch=$GITHUB_HEAD_REF -p \$FREE_PORT:$EXPOSED_PORT \$IMAGE_NAME
         else
             echo "Docker file does not exist"
         fi
     else
         echo "Dockerfile variable is empty, you must provide a Dockerfile..."
     fi
-    
-    echo "exposed port>> " \$FREE_PORT
     
     # Set up tunneling using Serveo with a random high-numbered port
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:\$FREE_PORT serveo.net | sudo tee -a /var/log/serveo_output.log 2>&1 &
