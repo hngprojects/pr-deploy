@@ -74,7 +74,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     sleep 5
     echo $DEMO_URL
     echo "before"
-    DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
+    export DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     echo $DEMO_URL
     echo "after"
     cat serveo_output.log
