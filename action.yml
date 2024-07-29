@@ -55,7 +55,7 @@ runs:
     #   run: echo ${{ github.repository }}
 
     - name: Run entrypoint.sh
-      run: chmod +x entrypoint.sh && entrypoint.sh
+      run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
