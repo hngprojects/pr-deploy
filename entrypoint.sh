@@ -32,6 +32,9 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     mkdir -p srv/hngprojects
     cd srv/hngprojects
 
+    # remove existing folder path
+    rm -rf $REPO_DIR
+
     # clone the repository
     # mkdir $REPO_DIR
     git clone -b $GITHUB_HEAD_REF $REPO_URL $REPO_DIR
@@ -44,7 +47,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     fi
 
     # Checks exposed port is provided
-    if [ ! -n "$EXPOSED_PORT"]; then
+    if [ ! -n "$EXPOSED_PORT" ]; then
         echo "Exposed port not provided, You must provide an exposed port..."
         exit 1
     fi
