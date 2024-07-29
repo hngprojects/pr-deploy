@@ -7,8 +7,8 @@ This GitHub Action deploys pull requests in Docker containers, allowing you to t
 
 ---------------------------------------------------------------------------------------------------------------------
 
-**For Contributors**
-----------------------------------------------------------------------------------------------------------------------
+## For Contributors
+### Overview
 These tool made use of two files named:
 - action.yml
 - entrypoint.sh
