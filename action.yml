@@ -57,7 +57,7 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
     - name: Run entrypoint.sh
-      run: entrypoint.sh
+      run: chmod +x entrypoint.sh && entrypoint.sh
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
