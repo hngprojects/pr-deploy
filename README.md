@@ -1,3 +1,11 @@
+## This documentation has been sectioned into two; First section for Contributors and the Second section for Users
+
+
+
+ 
+ 
+**For Users**
+------------------------------------------------------------------------------------------------------------------
  GitHub Action Tool
  # Pr-deploy
 release:v1.0.0
