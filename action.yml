@@ -51,26 +51,19 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
     - name: Run entrypoint.sh
-      run: entrypoint.sh
+      run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
       env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
         SERVER_HOST: ${{ inputs.server_host }}
         SERVER_USERNAME: ${{ inputs.server_username }}
         SERVER_PASSWORD: ${{ inputs.server_password }}
         SERVER_PORT: ${{ inputs.server_port }}
-        DIR: ${{ inputs.dir }}
+        CONTEXT: ${{ inputs.context }}
         DOCKERFILE: ${{ inputs.dockerfile }}
-        START_COMMAND: ${{ inputs.start_command }}
         COMPOSE_FILE: ${{ inputs.compose_file }}
         EXPOSED_PORT: ${{ inputs.exposed_port }}
-        ENV_VARS: ${{ inputs.env }}
-        REPO_URL: ${{ inputs.repo_url }}
-        BRANCH_NAME: ${{ inputs.branch_name }}
-        PR_NUMBER: ${{ inputs.pr_number }}
+        ENVS: ${{ inputs.envs }}
+        REPO_URL: ${{ github.event.repository.clone_url }}
+        REPO_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}
+        PR: ${{ github.event.number }}
