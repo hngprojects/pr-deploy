@@ -71,7 +71,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     # Set up tunneling using Serveo with a random high-numbered port
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:\$FREE_PORT serveo.net > serveo_output.log 2>&1 &
     sleep 5
-    SERVEO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+    SERVEO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     cat serveo_output.log
     echo "Deployment URL: \$SERVEO_URL"
 
