@@ -78,11 +78,13 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
       local repo_owner="${REPO_OWNER}"
       local repo_name="${REPO_NAME}"
       local token="${GITHUB_TOKEN}"
+
+      echo \$token
     
-      curl -s -H "Authorization: token ${token}" \
+      curl -s -H "Authorization: token \${token}" \
            -X POST \
-           -d "{\"body\": \"${comment}\"}" \
-           "https://api.github.com/repos/${repo_owner}/${repo_name}/issues/${pr_number}/comments"
+           -d "{\"body\": \"\${comment}\"}" \
+           "https://api.github.com/repos/\${repo_owner}/\${repo_name}/issues/\${pr_number}/comments"
     }
     
     add_comment_to_pr "Deployment URL: \$SERVEO_URL"
