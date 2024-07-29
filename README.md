@@ -30,6 +30,7 @@ The following inputs are required to configure the GitHub Action. These inputs a
 - context, that is where the Dockerfile is located.
 - define the Dockerfile for deployment.
 - set the environmental variables in Github secrets.
+
 The environmental variables needed for this tool version are:
 - SERVER_HOST
 - SEVER_PASSWORD
