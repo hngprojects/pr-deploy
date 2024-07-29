@@ -51,9 +51,11 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    # - name: Set GitHub Path
-    #   run: echo ${{ github.repository }}
-
+    - name: Print Pull Request JSON
+      run: |
+        echo "Pull Request JSON:"
+        echo "${{ toJson(github.event.pull_request) }}"
+        
     - name: Run entrypoint.sh
       run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
@@ -69,5 +71,4 @@ runs:
         ENVS: ${{ inputs.envs }}
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}
-        BRANCH_NAME: ${GITHUB_HEAD_REF}
-
+        
