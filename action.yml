@@ -14,7 +14,7 @@ inputs:
   server_port:
     description: SSH port
     required: true
-  dir:
+  context:
     description: Directory in the repository where the Dockerfile or start command is located
     default: "./"
   dockerfile:
