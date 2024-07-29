@@ -91,3 +91,17 @@ jobs:
           exposed_port: '5000'
           compose_file: 'docker-compose.yml'
 ```
+
+
+## Troubleshooting tips:
+
+- If the action fails, check the GitHub Actions logs for detailed error messages.
+- Ensure that your server's firewall allows incoming connections on the SSH port and the random port range used for deployments.
+- Verify that the server has sufficient resources (CPU, memory, disk space) to run multiple Docker containers.
+
+## Best practices:
+
+- Regularly update the action to the latest version to benefit from bug fixes and improvements.
+- Use environment variables for sensitive information instead of hardcoding them in your Dockerfile or start command.
+- Implement proper access controls on your deployment server to ensure security.
+- Regularly clean up unused containers and images to conserve server resources.
