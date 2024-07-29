@@ -73,33 +73,25 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     sleep 5
     SERVEO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     cat serveo_output.log
-    echo "Deployment URL: \$SERVEO_URL"
-
-    curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    -X POST \
-    -d "{\"body\": \"Deployment URL: \$SERVEO_URL https://212fa7c9df92163709027b045388a1cd.serveo.net/\"}" \
-    "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
+  
     
     # Function to add a comment to the pull request
-    # add_comment_to_pr() {
-    #   # local comment="$1"
-    #   # local pr_number="${PR}"
-    #   # local repo_owner="${REPO_OWNER}"
-    #   # local repo_name="${REPO_NAME}"
-    #   # local token="${GITHUB_TOKEN}"
+    add_comment_to_pr() {
+      # local comment="$1"
+      # local pr_number="${PR}"
+      # local repo_owner="${REPO_OWNER}"
+      # local repo_name="${REPO_NAME}"
+      # local token="${GITHUB_TOKEN}"
+      local deployment_url=\$SERVEO_URL
     
-    #   # curl -s -H "Authorization: token ${token}" \
-    #   #      -X POST \
-    #   #      -d "{\"body\": \"${comment}\"}" \
-    #   #      "https://api.github.com/repos/${repo_owner}/${repo_name}/issues/${pr_number}/comments"
-      
-    #     curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    #        -X POST \
-    #        -d "{\"body\": \"Welcome to HNG\"}" \
-    #        "https://api.github.com/repos/hngprojects/pr-deploy/issues/14/comments"
-    # }
-    # add_comment_to_pr "Deployment URL: \$SERVEO_URL"
-    
+        echo "Deployment URL: ${deployment_url}"
+
+        curl -s -H "Authorization: token $GITHUB_TOKEN" \
+        -X POST \
+        -d "{\"body\": \"Deployment URL: ${deployment_url} https://212fa7c9df92163709027b045388a1cd.serveo.net/\"}" \
+        "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
+    }
+    add_comment_to_pr 
 EOF
     
 echo "Deployment script executed."
