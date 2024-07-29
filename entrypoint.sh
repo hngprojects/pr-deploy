@@ -1,18 +1,5 @@
 #!/bin/bash
 
-
-  # GITHUB_ACTION_PATH: ${{ github.action_path }}
-  #       SERVER_HOST: ${{ inputs.server_host }}
-  #       SERVER_USERNAME: ${{ inputs.server_username }}
-  #       SERVER_PASSWORD: ${{ inputs.server_password }}
-  #       SERVER_PORT: ${{ inputs.server_port }}
-  #       DIR: ${{ inputs.dir }}
-  #       DOCKERFILE: ${{ inputs.dockerfile }}
-  #       START_COMMAND: ${{ inputs.start_command }}
-  #       COMPOSE_FILE: ${{ inputs.compose_file }}
-  #       EXPOSED_PORT: ${{ inputs.exposed_port }}
-  #       ENV_VARS: ${{ inputs.env }}
-
 set -e
 # path to the directory where the project will be cloned
 PATH="/srv/hngprojects"
