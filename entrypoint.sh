@@ -82,13 +82,14 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
       # local repo_owner="${REPO_OWNER}"
       # local repo_name="${REPO_NAME}"
       # local token="${GITHUB_TOKEN}"
-      local deployment_url="${SERVEO_URL}"
+      export deployment_url=\${SERVEO_URL}
     
         echo "Deployment URL: \${deployment_url}"
+        echo "Deployment URL: ${deployment_url}"
 
         curl -s -H "Authorization: token $GITHUB_TOKEN" \
         -X POST \
-        -d "{\"body\": \"Deployment URL: ${deployment_url} https://212fa7c9df92163709027b045388a1cd.serveo.net/\"}" \
+        -d "{\"body\": "Deployment URL: ${deployment_url} https://212fa7c9df92163709027b045388a1cd.serveo.net/"}" \
         "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
     }
     add_comment_to_pr 
