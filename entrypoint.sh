@@ -33,6 +33,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     cd $_
 
     # clone the repository
+    mkdir $REPO_DIR
     git clone -b $GITHUB_HEAD_REF $REPO_URL $REPO_DIR
     cd $REPO_DIR
 
