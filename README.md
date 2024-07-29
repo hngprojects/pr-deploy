@@ -6,14 +6,14 @@ release:v1.0.0
 This GitHub Action deploys pull requests in Docker containers, allowing you to test your changes in an isolated environment before merging.
 
 ## Usage
-This action is triggered by pull request events. It builds the Docker image for the pull request and deploys it in a new Docker container.
+To help you get started quickly, here’s an example of how to configure your GitHub Actions workflow file to deploy pull requests in Docker containers using this GitHub Action. This setup allows you to automatically build and deploy your application whenever a pull request is opened, ensuring your changes are tested in an isolated environment.
+Pull request events trigger this action. It builds the Docker image for the pull request and deploys it in a new Docker container. This step calls the action tool in the workflow script
 ```
 steps:
 - uses: ./
 ```
 
 ## Example Workflow File
-To help you get started quickly, here’s an example of how to configure your GitHub Actions workflow file to deploy pull requests in Docker containers using this GitHub Action. This setup allows you to automatically build and deploy your application whenever a pull request is opened, ensuring your changes are tested in an isolated environment.
 
 Your workflow file should be formatted as follows:
 ```
