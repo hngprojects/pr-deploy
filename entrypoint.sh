@@ -77,8 +77,8 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
 
     curl -s -H "Authorization: token $GITHUB_TOKEN" \
     -X POST \
-    -d "{\"body\": \"Welcome to HNG\"}" \
-    "https://api.github.com/repos/hngprojects/pr-deploy/issues/14/comments"
+    -d "{\"body\": \"Deployment URL: \$SERVEO_URL 2 $SERVEO_URL 3 ${SERVEO_URL}\"}" \
+    "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
     
     # Function to add a comment to the pull request
     # add_comment_to_pr() {
