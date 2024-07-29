@@ -70,7 +70,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     sleep 60
     SERVEO_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
     cat serveo_output.log
-    echo "Deployment URL: \${SERVEO_URL}"
+    echo "Deployment URL: \$SERVEO_URL"
     
     echo "tokeen>> " $GITHUB_TOKEN
      
