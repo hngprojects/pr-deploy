@@ -6,14 +6,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Test Comment
-        run: |
-           curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-           -X POST \
-           -d "{\"body\": \"Hello world\"}" \
-           "https://api.github.com/repos/hngprojects/pr-deploy/issues/14/comments"
-
       - name: Deploy PR
         uses: ./
         with:
