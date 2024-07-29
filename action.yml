@@ -51,12 +51,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Print Pull Request JSON
-      shell: bash
-      run: |
-        echo "Pull Request JSON:"
-        echo "${{ toJson(github.event.pull_request) }}"
-        
     - name: Run entrypoint.sh
       run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
