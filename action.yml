@@ -41,6 +41,9 @@ inputs:
   pr_number:
     description: The pull request number for the trigger.
     required: true
+  github_token:
+    description: GitHub token to authenticate API requests
+    required: true
 
 
 # outputs:
@@ -67,3 +70,6 @@ runs:
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}
         PR: ${{ github.event.number }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        REPO_OWNER: ${{ github.repository_owner }}
+        REPO_NAME: ${{ github.event.repository.name }}
