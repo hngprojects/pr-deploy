@@ -69,5 +69,5 @@ runs:
         ENVS: ${{ inputs.envs }}
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}
-        BRANCH_NAME: ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+        BRANCH_NAME: ${GITHUB_HEAD_REF}
 
