@@ -78,7 +78,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     add_comment_to_pr() {
       export deployment_url=\${SERVEO_URL}
       echo "Deployment URL: \${deployment_url}"
-       echo "Deployment URL: \${deployment_url}" > deploy.log
+       echo '"Deployment URL: \${deployment_url}"' > deploy.log
        cat deploy.log
       # Properly escape the JSON string
       curl -s -H "Authorization: token $GITHUB_TOKEN" \
