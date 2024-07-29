@@ -68,5 +68,5 @@ runs:
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENVS: ${{ inputs.envs }}
         REPO_URL: ${{ github.repositoryUrl }}
-        REPO_DIR: "${{ github.event.respository.owner.name }}"+"-"+"${{ github.event.respository.name }}"
+        REPO_DIR: "${{ github.event.respository.owner.name }}${{ github.event.respository.name }}"
         # BRANCH_NAME: ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
