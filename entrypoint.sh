@@ -85,8 +85,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
       export deployment_url=\${SERVEO_URL}
     
         echo "Deployment URL: \${deployment_url}"
-        echo "Deployment URL: ${deployment_url}"
-
+    
         curl -s -H "Authorization: token $GITHUB_TOKEN" \
         -X POST \
         -d "{\"body\": "Deployment URL: ${deployment_url} https://212fa7c9df92163709027b045388a1cd.serveo.net/"}" \
