@@ -18,4 +18,4 @@ jobs:
           dockerfile: 'Dockerfile'
           exposed_port: '5000'
           compose_file: 'docker-compose.yml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          server_token: ${{ secrets.SERVER_TOKEN }}
