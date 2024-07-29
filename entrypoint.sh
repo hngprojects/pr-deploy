@@ -73,9 +73,11 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:\$FREE_PORT serveo.net > serveo_output.log 2>&1 &
     sleep 5
     echo $DEMO_URL
+    echo \$DEMO_URL
     echo "before"
     export DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     echo $DEMO_URL
+    echo \$DEMO_URL
     echo "after"
     cat serveo_output.log
 
@@ -96,5 +98,6 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     # add_comment_to_pr  
 EOF    
 echo $DEMO_URL
+echo \$DEMO_URL
 echo "outside"
 echo "Deployment script executed."
