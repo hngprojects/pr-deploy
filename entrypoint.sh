@@ -29,11 +29,11 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     # free port
     FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
     
-    mkdir -p /srv/hngprojects
-    cd $_
+    mkdir -p srv/hngprojects
+    cd srv/hngprojects
 
     # clone the repository
-    mkdir $REPO_DIR
+    # mkdir $REPO_DIR
     git clone -b $GITHUB_HEAD_REF $REPO_URL $REPO_DIR
     cd $REPO_DIR
 
