@@ -1,0 +1,20 @@
+name: PR Deploy
+on:
+  pull_request
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy PR
+        uses: ./
+        with:
+          server_host: ${{ secrets.SERVER_HOST }}
+          server_username: ${{ secrets.SERVER_USERNAME }}
+          server_password: ${{ secrets.SERVER_PASSWORD }}
+          server_port: ${{ secrets.SERVER_PORT }}
+          dir: '.'
+          dockerfile: 'Dockerfile'
+          exposed_port: '5000'
+          compose_file: 'docker-compose.yml'
