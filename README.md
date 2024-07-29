@@ -3,7 +3,7 @@
 release:v1.0.0
 
 ## About
-This GitHub Action deploys pull requests in Docker containers, allowing you to test your changes in an isolated environment before merging. This documentation has been sectioned into two; First section for Contributors and the Second section for Users
+This GitHub Action deploys pull requests in Docker containers, allowing you to test your changes in an isolated environment before merging. This documentation has been sectioned into two; First section for **Contributors** and the Second section for **Users**
 
 **For Contributors**
 ----------------------------------------------------------------------------------------------------------------------
