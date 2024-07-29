@@ -70,7 +70,9 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     sleep 30
     SERVEO_URL=$(grep "Forwarding HTTP traffic from" /var/log/serveo_output.log | tail -n 1 | awk '{print $5}')
     echo "Deployment URL: \$SERVEO_URL"
-
+    
+    echo "tokeen>> " \$GITHUB_TOKEN
+     
     # Function to add a comment to the pull request
     add_comment_to_pr() {
       local comment="$1"
@@ -86,7 +88,6 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
            -d "{\"body\": \"\${comment}\"}" \
            "https://api.github.com/repos/\${repo_owner}/\${repo_name}/issues/\${pr_number}/comments"
     }
-    
     add_comment_to_pr "Deployment URL: \$SERVEO_URL"
     
 EOF
