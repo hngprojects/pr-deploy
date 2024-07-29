@@ -51,8 +51,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set GitHub Path
-      run: echo ${{ github.repository }}
+    # - name: Set GitHub Path
+    #   run: echo ${{ github.repository }}
 
     - name: Run entrypoint.sh
       run: chmod +x entrypoint.sh && entrypoint.sh
