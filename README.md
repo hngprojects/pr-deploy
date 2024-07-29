@@ -7,7 +7,10 @@ This GitHub Action deploys pull requests in Docker containers, allowing you to t
 
 **For Contributors**
 ----------------------------------------------------------------------------------------------------------------------
-
+These tool made use of two files named:
+- action.yml
+- entrypoint.sh
+The `.yml` file declares the inputs needed to deploy the pull request in isolated docker containers. 
 
  
  
