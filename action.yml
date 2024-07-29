@@ -72,4 +72,4 @@ runs:
         ENVS: ${{ inputs.envs }}
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}
-        
+        PR: ${{ github.event.number }}
