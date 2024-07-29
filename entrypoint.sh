@@ -74,7 +74,6 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     SERVEO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     cat serveo_output.log
 
-    sudo apt install jq -y
     
     # Function to add a comment to the pull request
     add_comment_to_pr() {
