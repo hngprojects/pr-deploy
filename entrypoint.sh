@@ -64,7 +64,9 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     else
         echo "Dockerfile variable is empty, you must provide a Dockerfile..."
     fi
-
+    
+    echo "exposed port>> " $FREE_PORT
+    
     # Set up tunneling using Serveo with a random high-numbered port
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:\$FREE_PORT serveo.net | sudo tee -a /var/log/serveo_output.log 2>&1 &
     sleep 30
