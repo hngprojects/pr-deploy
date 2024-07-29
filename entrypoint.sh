@@ -78,11 +78,12 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     add_comment_to_pr() {
       export deployment_url=\${SERVEO_URL}
       echo "Deployment URL: \${deployment_url}"
-    
+       echo "Deployment URL: \${deployment_url}" > deploy.log
+       cat deploy.log
       # Properly escape the JSON string
       curl -s -H "Authorization: token $GITHUB_TOKEN" \
       -X POST \
-      -d "{\"body\": \"Deployment URL: \$deployment_url https://212fa7c9df92163709027b045388a1cd.serveo.net/\"}" \
+      -d "{\"body\": $(cat deploy.log)" \
       "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
     }
     add_comment_to_pr  
