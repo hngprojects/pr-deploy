@@ -82,7 +82,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
       # local repo_owner="${REPO_OWNER}"
       # local repo_name="${REPO_NAME}"
       # local token="${GITHUB_TOKEN}"
-      local deployment_url=\$SERVEO_URL
+      local deployment_url="${SERVEO_URL}"
     
         echo "Deployment URL: \${deployment_url}"
 
