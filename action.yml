@@ -31,7 +31,7 @@ inputs:
     required: true
   env:
     description: Environment variables to pass to the container
-    required: true
+    required: false
   branch_name:
     description: The branch name for the github repository that made a pull request
     required: true
