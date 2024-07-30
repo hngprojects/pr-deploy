@@ -3,6 +3,10 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Get pr_number and pr_action
+PR_ACTION="$1"
+PR_NUMBER="$2"
+
 # Make the pr-deploy.sh script executable.
 chmod +x pr-deploy.sh
 
@@ -36,7 +40,7 @@ COMMENT="
 # Post the comment on the specified pull request.
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
     -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-    "https://api.github.com/repos/hngprojects/pr-deploy/issues/16/comments"
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
 
 # Echo the deployed URL.
 echo "Deployed URL: $DEPLOYED_URL"
