@@ -17,7 +17,7 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./
 DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_OWNER $REPO_NAME $GITHUB_HEAD_REF $GITHUB_SHA $SERVER_HOST | tail -n 1)
 
 # Prepare the comment to be posted on GitHub.
-COMMENT="Here are the latest updates on your deployment. Check out the action and star our project for more insights! 🔗
+COMMENT="<strong>Here are the latest updates on your deployment. Explore the action and ⭐ star our project for more insights!</strong>
 
 <table>
   <thead>
@@ -30,14 +30,13 @@ COMMENT="Here are the latest updates on your deployment. Check out the action an
   </thead>
   <tbody>
     <tr>
-      <td><a href=\"https://github.com/hng-projects/pr-deploy/actions\">PR Deploy</a></td>
+      <td><a href=\"https://github.com/hngprojects/pr-deploy\">PR Deploy 🤖</a></td>
       <td>Deployed 🚀</td>
-      <td><a href=\"$DEPLOYED_URL\">Preview Link</a></td>
-      <td>$(date +'%b %d, %Y %I:%M%p')</td>
+      <td><a href=\"$DEPLOYED_URL\">Preview Link 🔗</a></td>
+      <td>$(date +'%b %d, %Y %I:%M%p') 📅</td>
     </tr>  
   </tbody>
 </table>"
-
 
 # Post the comment on the specified pull request.
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
