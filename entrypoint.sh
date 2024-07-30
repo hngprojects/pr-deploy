@@ -41,12 +41,6 @@ if [ "$PR_ACTION" == "opened" ]; then
   curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
       -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
       "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
-  
-  # Extract the comment ID using jq
-  # COMMENT_ID=$(echo "$RESPONSE" | jq -r '.id')
-  
-  # Save the comment ID to a file
-  # echo "$COMMENT_ID" > "$COMMENT_ID_FILE"
 fi
 
 # Make an API request to get the comments on the pull request
