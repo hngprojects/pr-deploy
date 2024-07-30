@@ -75,7 +75,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     export DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     curl -s -H "Authorization: token $GITHUB_TOKEN" \
     -X POST \
-    -d "{\"body\": \"\$DEMO_URL\"" \
+    -d "{\"body\": \"\$DEMO_URL\"}" \
     "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
 EOF
 echo "Deployment script executed."
