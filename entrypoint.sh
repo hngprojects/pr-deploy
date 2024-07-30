@@ -3,9 +3,8 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-COMMENT="No Comment"
 comment() {
-    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
+    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖\
     <table>
       <thead>
         <tr>
@@ -46,9 +45,7 @@ RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
 
 # Parse the response to extract the ID of the first comment made by github-actions
-echo "$RESPONSE_DATA"
 COMMENT_ID=$(echo "$RESPONSE_DATA" | jq -r '[.[] | select(.user.login == "github-actions[bot]")] | first | .id')
-echo $COMMENT_ID
 
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
@@ -70,8 +67,6 @@ elif [ "$PR_ACTION" == "closed" ]; then
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
     comment "Deployed 🎉" $DEPLOYED_URL
-    echo $COMMENT_ID
-    echo $COMMENT
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
