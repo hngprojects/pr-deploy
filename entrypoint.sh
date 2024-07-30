@@ -30,7 +30,7 @@ COMMENT="
     <tr>
       <td>Deployed 🚀</td>
       <td><a href=\"$DEPLOYED_URL\">Preview Link</a></td>
-      <td>$(date +\"%b %d, %Y %I:%M%p\")</td>
+      <td>$(date +'%b %d, %Y %I:%M%p')</td>
     </tr>  
   </tbody>
 </table>"
