@@ -75,6 +75,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     export DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
     echo \$DEMO_URL
     echo "after"
+EOF
     # cat serveo_output.log
    #  # Function to add a comment to the pull request
    # # add_comment_to_pr() {
@@ -89,7 +90,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
    #    "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
    #  }
    #  # add_comment_to_pr  
-EOF    
+echo $DEMO_URL    
 echo $DEMO_URL
 echo \$DEMO_URL
 echo "outside"
