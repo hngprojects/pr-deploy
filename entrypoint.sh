@@ -3,10 +3,6 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Get pr_number and pr_action
-PR_ACTION="$1"
-PR_NUMBER="$2"
-
 # Make the pr-deploy.sh script executable.
 chmod +x pr-deploy.sh
 
