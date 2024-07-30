@@ -38,9 +38,9 @@ FILE_NAME="${REPO_OWNER}_${REPO_NAME}_${GITHUB_HEAD_REF}_${PR_NUMBER}"
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   COMMENT=$(update_comment "starting deployment..." "") 
-  RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+  curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
       -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-      "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
+      "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
   
   # Extract the comment ID using jq
   # COMMENT_ID=$(echo "$RESPONSE" | jq -r '.id')
@@ -54,8 +54,9 @@ RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
 
 # Parse the response to extract the ID of the first comment made by github-actions
+echo "$RESPONSE_DATA"
 COMMENT_ID=$(echo "$RESPONSE_DATA" | jq -r '[.[] | select(.user.login == "github-actions")] | first | .id')
-
+echo $COMMENT_ID
 
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
