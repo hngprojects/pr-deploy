@@ -71,11 +71,14 @@ fi
 
 # Set up tunneling using Serveo with a random high-numbered port
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
-sleep 5
+sleep 3
+
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+echo "Deployed URL: $DEPLOYED_URL"
+
 curl -s -H "Authorization: token $GITHUB_TOKEN" \
 -X POST \
--d "{\"body\": \"$DEPLOYED_URL\"}" \
+-d "{\"body\": \"Deployed URL: $DEPLOYED_URL\"}" \
 "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
 
-echo "Deployment script executed."
+echo "Deployment script executed successfully..."
