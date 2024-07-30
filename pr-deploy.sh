@@ -74,11 +74,10 @@ nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:$FREE_PORT serveo.n
 sleep 3
 
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
-echo "Deployed URL: $DEPLOYED_URL"
 
-curl -s -H "Authorization: token $GITHUB_TOKEN" \
--X POST \
--d "{\"body\": \"Deployed URL: $DEPLOYED_URL\"}" \
-"https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
+# curl -s -H "Authorization: token $GITHUB_TOKEN" \
+# -X POST \
+# -d "{\"body\": \"Deployed URL: $DEPLOYED_URL\"}" \
+# "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
 
-echo "Deployment script executed successfully..."
+echo $DEPLOYED_URL
