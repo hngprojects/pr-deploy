@@ -3,9 +3,9 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-COMMENT="No Comment"
+export COMMENT="No Comment"
 comment() {
-    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
+    export COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
     <table>
       <thead>
         <tr>
@@ -70,6 +70,7 @@ elif [ "$PR_ACTION" == "closed" ]; then
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
     comment "Deployed 🎉" $DEPLOYED_URL
+    echo $COMMENT
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
