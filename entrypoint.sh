@@ -12,25 +12,24 @@ comment() {
 
     # Construct the comment body with proper escaping
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
-    
-    <table>
-      <thead>
-        <tr>
-          <th>Deployed By</th>
-          <th>Status</th>
-          <th>Preview URL</th>
-          <th>Updated At (UTC)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
-          <td>${status_message}</td>
-          <td><a href='${encoded_url}'>Visit Preview</a></td>
-          <td>$(date +'%b %d, %Y %I:%M%p')</td>
-        </tr>  
-      </tbody>
-    </table>" '{body: $body}')
+<table>
+  <thead>
+    <tr>
+      <th>Deployed By</th>
+      <th>Status</th>
+      <th>Preview URL</th>
+      <th>Updated At (UTC)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
+      <td>${status_message}</td>
+      <td><a href='${encoded_url}'>Visit Preview</a></td>
+      <td>$(date +'%b %d, %Y %I:%M%p')</td>
+    </tr>  
+  </tbody>
+</table>" '{body: $body}')
 
     # Debug: Print the comment body
     echo "Comment Body:"
