@@ -4,7 +4,11 @@
 set -e
 
 comment() {
-    export COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
+    local status_message=$1
+    local preview_url=$2
+
+    # Construct the comment body
+    local comment_body="<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
     
     <table>
       <thead>
@@ -18,13 +22,22 @@ comment() {
       <tbody>
         <tr>
           <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
-          <td>${1}</td>
-          <td><a href='$DEPLOYED_URL'>Visit Preview</a></td>
+          <td>${status_message}</td>
+          <td><a href='${preview_url}'>Visit Preview</a></td>
           <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
       </tbody>
     </table>"
-    echo $COMMENT
+
+    if [ -z "$COMMENT_ID" ]; then
+        curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+            -d "$(jq -n --arg body "$comment_body" '{body: $body}')" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
+    else
+        curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
+            -d "$(jq -n --arg body "$comment_body" '{body: $body}')" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
+    fi
 }
 
 # Make the pr-deploy.sh script executable.
@@ -37,9 +50,6 @@ FILE_NAME="${REPO_OWNER}_${REPO_NAME}_${GITHUB_HEAD_REF}_${PR_NUMBER}"
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
-  curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
-      -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
-      "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
 fi
 
 # Make an API request to get the comments on the pull request
@@ -57,20 +67,8 @@ DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p 
 
 if [  -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#"
-    curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
-         -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 elif [ "$PR_ACTION" == "closed" ]; then
     comment "Terminated 🛑" "#"
-    curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
-         -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
     comment "Deployed 🎉" $DEPLOYED_URL
-    curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-         -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 fi
