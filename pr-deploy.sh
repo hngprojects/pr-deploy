@@ -59,8 +59,8 @@ fi
 cd $CONTEXT
 if [ -n "$DOCKERFILE" ]; then
     if [ -f "$DOCKERFILE" ]; then
-        sudo docker build --label branch=$BRANCH -t $TIMESTAMP .
-        sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT $TIMESTAMP
+        sudo docker build --label branch=$BRANCH -t $TIMESTAMP . > /dev/null
+        sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT $TIMESTAMP > /dev/null
     else
         echo "Docker file does not exist"
     fi
