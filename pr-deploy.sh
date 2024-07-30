@@ -2,7 +2,7 @@
 
 set -e
 
-CONTEXT=$1 || ""
+CONTEXT=${1:-""}
 DOCKERFILE=$2
 EXPOSED_PORT=$3
 REPO_URL=$4
@@ -11,6 +11,8 @@ REPO_NAME=$6
 BRANCH=$7
 COMMIT_SHA=$8
 SERVER_HOST=$9
+PR_ACTION="${10}"
+PR_NUMBER="${11}"
 REPO_DIR="${REPO_OWNER}-${REPO_NAME}"
 
 # Ensure docker is installed
@@ -49,6 +51,26 @@ if [ ! -n "$EXPOSED_PORT" ]; then
     echo "Exposed port not provided, You must provide an exposed port..."
     exit 1
 fi
+
+CONTAINERS=$(docker ps -aq --filter "label=branch=$BRANCH")
+IMAGES=$(docker images -q --filter "label=branch=$BRANCH")
+case $PR_ACTION in
+    reopened | synchronize)
+    	if [ -n "$CONTAINERS" ]; then
+ 	    	sudo docker stop $CONTAINERS
+	     	sudo docker rm $CONTAINERS
+ 	       	sudo docker rmi $IMAGES
+	fi
+        ;;
+    closed)
+     	if [ -n "$CONTAINERS" ]; then
+ 	    	sudo docker stop $CONTAINERS
+	     	sudo docker rm $CONTAINERS
+	       	sudo docker rmi $IMAGES
+	fi
+    	exit 0
+        ;;
+esac
 
 cd $CONTEXT
 if [ -n "$DOCKERFILE" ]; then
