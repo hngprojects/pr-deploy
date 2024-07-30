@@ -36,7 +36,7 @@ COMMENT="
 # Post the comment on the specified pull request.
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
     -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-    "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues/$PR_NUMBER/comments"
+    "https://api.github.com/repos/hngprojects/pr-deploy/issues/16/comments"
 
 # Echo the deployed URL.
 echo "Deployed URL: $DEPLOYED_URL"
