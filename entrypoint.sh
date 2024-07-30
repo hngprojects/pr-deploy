@@ -8,7 +8,7 @@ comment() {
     local preview_url=$2
 
     # Construct the comment body
-    local comment_body="<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
+    COMMENT_BODY=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
     
     <table>
       <thead>
@@ -27,15 +27,19 @@ comment() {
           <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
       </tbody>
-    </table>"
+    </table>" '{body: $body}')
 
     if [ -z "$COMMENT_ID" ]; then
+        # Create a new comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
-            -d "$(jq -n --arg body "$comment_body" '{body: $body}')" \
+            -d "$COMMENT_BODY" \
+            -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
     else
+        # Update an existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
-            -d "$(jq -n --arg body "$comment_body" '{body: $body}')" \
+            -d "$COMMENT_BODY" \
+            -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
     fi
 }
