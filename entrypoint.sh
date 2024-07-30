@@ -17,7 +17,7 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./
 DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_OWNER $REPO_NAME $GITHUB_HEAD_REF $GITHUB_SHA $SERVER_HOST | tail -n 1)
 
 # Prepare the comment to be posted on GitHub.
-COMMENT="<strong>Here are the latest updates on your deployment. Explore the action and ⭐ star our project for more insights! 🔍</strong>
+COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 
 <table>
   <thead>
