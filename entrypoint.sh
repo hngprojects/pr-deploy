@@ -72,30 +72,23 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
     # Set up tunneling using Serveo with a random high-numbered port
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:\$FREE_PORT serveo.net > serveo_output.log 2>&1 &
     sleep 5
-    echo $DEMO_URL
-    echo \$DEMO_URL
-    echo "before"
     export DEMO_URL=\$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print \$5}')
-    echo $DEMO_URL
     echo \$DEMO_URL
     echo "after"
-    cat serveo_output.log
-
-    
-
-    # Function to add a comment to the pull request
-    add_comment_to_pr() {
-      export deployment_url=\${SERVEO_URL}
-      echo "Deployment URL: \${deployment_url}"
-       echo "Deployment URL: \${deployment_url}" > deploy.log
-       cat deploy.log
-      # Properly escape the JSON string
-      curl -s -H "Authorization: token $GITHUB_TOKEN" \
-      -X POST \
-      -d "{\"body\": \"$(cat deploy.log)\"" \
-      "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
-    }
-    # add_comment_to_pr  
+    # cat serveo_output.log
+   #  # Function to add a comment to the pull request
+   # # add_comment_to_pr() {
+   #    export deployment_url=\${SERVEO_URL}
+   #    echo "Deployment URL: \${deployment_url}"
+   #     echo "Deployment URL: \${deployment_url}" > deploy.log
+   #     cat deploy.log
+   #    # Properly escape the JSON string
+   #    curl -s -H "Authorization: token $GITHUB_TOKEN" \
+   #    -X POST \
+   #    -d "{\"body\": \"$(cat deploy.log)\"" \
+   #    "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
+   #  }
+   #  # add_comment_to_pr  
 EOF    
 echo $DEMO_URL
 echo \$DEMO_URL
