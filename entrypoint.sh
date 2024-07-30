@@ -7,10 +7,6 @@ comment() {
     local status_message=$1
     local preview_url=$2
 
-    # Ensure preview_url is URL encoded
-    local encoded_url=$(printf '%s' "$preview_url" | jq -sRr @uri)
-
-    # Construct the comment body with proper escaping
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 <table>
   <thead>
@@ -25,17 +21,12 @@ comment() {
     <tr>
       <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
       <td>${status_message}</td>
-      <td><a href='${encoded_url}'>Visit Preview</a></td>
+      <td><a href='${preview_url}'>Visit Preview</a></td>
       <td>$(date +'%b %d, %Y %I:%M%p')</td>
     </tr>  
   </tbody>
 </table>" '{body: $body}')
 
-    # Debug: Print the comment body
-    echo "Comment Body:"
-    echo "$comment_body"
-
-    # Determine if we need to create or update the comment
     if [ -z "$COMMENT_ID" ]; then
         # Create a new comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
