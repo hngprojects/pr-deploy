@@ -2,16 +2,14 @@
 
 set -e
 
-CONTEXT=$1
+CONTEXT=$1 || ""
 DOCKERFILE=$2
 EXPOSED_PORT=$3
 REPO_URL=$4
 REPO_OWNER=$5
 REPO_NAME=$6
-REPO_DIR="${REPO_OWNER}-${REPO_NAME}"
-BRANCH=$7
-PR_NUMBER=$8
-GITHUB_TOKEN=$9
+BRANCH=$6
+COMMIT_SHA=$7
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -25,17 +23,11 @@ if [ ! command -v python3 &> /dev/null ]; then
     sudo apt-get install python3 -y
 fi
 
-# getting timestamp
-TIMESTAMP=$(date "+%Y%m%d%H%M%S")
-
-# image name
-IMAGE_NAME="${REPO_DIR}-${PR_NUMBER}-${TIMESTAMP}"
-
 # free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-mkdir -p srv/hngprojects
-cd srv/hngprojects
+mkdir -p /srv/hngprojects
+cd /srv/hngprojects
 
 # remove existing folder path
 rm -rf $REPO_DIR
@@ -44,9 +36,9 @@ rm -rf $REPO_DIR
 git clone -b $BRANCH $REPO_URL $REPO_DIR
 cd $REPO_DIR
 
-# Checks if context exist
+# Checks if the context directory exists
 if [ ! -d "$CONTEXT" ]; then
-    echo "Directory not found or does not exist: $CONTEXT does not exist."
+    echo "Context directory does not exist..."
     exit 1
 fi
 
@@ -59,8 +51,9 @@ fi
 cd $CONTEXT
 if [ -n "$DOCKERFILE" ]; then
     if [ -f "$DOCKERFILE" ]; then
-        sudo docker build --label branch=$BRANCH -t $TIMESTAMP . > /dev/null
-        sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT $TIMESTAMP > /dev/null
+	echo "Building docker image..."
+        sudo docker build --label branch=$BRANCH -t $COMMIT_SHA -f $DOCKERFILE .
+        sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT --name $COMMIT_SHA $COMMIT_SHA
     else
         echo "Docker file does not exist"
     fi
