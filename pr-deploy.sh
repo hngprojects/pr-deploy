@@ -74,9 +74,4 @@ sleep 3
 
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
-# curl -s -H "Authorization: token $GITHUB_TOKEN" \
-# -X POST \
-# -d "{\"body\": \"Deployed URL: $DEPLOYED_URL\"}" \
-# "https://api.github.com/repos/hngprojects/pr-deploy/issues/15/comments"
-
 echo $DEPLOYED_URL
