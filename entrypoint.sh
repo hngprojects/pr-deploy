@@ -24,6 +24,7 @@ update_comment() {
         </tr>  
       </tbody>
     </table>"
+    echo $COMMENT
 }
 
 # Make the pr-deploy.sh script executable.
