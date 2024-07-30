@@ -4,8 +4,8 @@
 set -e
 
 comment() {
-    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
-
+    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
+    
     <table>
       <thead>
         <tr>
@@ -17,9 +17,9 @@ comment() {
       </thead>
       <tbody>
         <tr>
-          <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
-          <td>${1}</td>
-          <td><a href='${2}'>Visit Preview</a></td>
+          <td><a href=\"https://github.com/hngprojects/pr-deploy\">PR Deploy</a></td>
+          <td>${1} 🚀</td>
+          <td><a href=\"$DEPLOYED_URL\">${2-""}</a></td>
           <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
       </tbody>
