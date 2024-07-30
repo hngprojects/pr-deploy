@@ -3,9 +3,9 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-export COMMENT="No Comment"
+COMMENT="No Comment"
 comment() {
-    export COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
+    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
     <table>
       <thead>
         <tr>
@@ -43,7 +43,7 @@ fi
 
 # Make an API request to get the comments on the pull request
 RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"  > /dev/null)
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
 
 # Parse the response to extract the ID of the first comment made by github-actions
 echo "$RESPONSE_DATA"
@@ -70,6 +70,7 @@ elif [ "$PR_ACTION" == "closed" ]; then
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
     comment "Deployed 🎉" $DEPLOYED_URL
+    echo $COMMENT_ID
     echo $COMMENT
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
