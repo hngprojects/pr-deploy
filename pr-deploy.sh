@@ -10,6 +10,7 @@ REPO_OWNER=$5
 REPO_NAME=$6
 BRANCH=$6
 COMMIT_SHA=$7
+REPO_DIR="${REPO_OWNER}-${REPO_NAME}"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
