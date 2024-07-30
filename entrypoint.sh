@@ -5,7 +5,7 @@ set -e
 
 # Prepare the comment to be posted on GitHub.
 update_comment() {
-    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖"    
+    COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
     <table>
       <thead>
         <tr>
