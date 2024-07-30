@@ -59,7 +59,6 @@ fi
 cd $CONTEXT
 if [ -n "$DOCKERFILE" ]; then
     if [ -f "$DOCKERFILE" ]; then
-        echo "Dockerfile detected..."
         sudo docker build --label branch=$BRANCH -t $TIMESTAMP .
         sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT $TIMESTAMP
     else
