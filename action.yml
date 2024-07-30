@@ -35,7 +35,7 @@ runs:
   using: 'composite'
   steps:
     - name: Run entrypoint.sh
-      run: chmod +x entrypoint.sh && ./entrypoint.sh ${{ github.event.action }} ${{ github.event.number }}
+      run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
@@ -49,4 +49,6 @@ runs:
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_OWNER: ${{ github.repository_owner }}
         REPO_NAME: ${{ github.event.repository.name }}
+        PR_NUMBER: ${{ github.event.number }}
+        PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
