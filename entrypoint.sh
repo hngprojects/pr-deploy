@@ -3,8 +3,8 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Prepare the comment to be posted on GitHub.
-update_comment() {
+COMMENT="No Comment"
+comment() {
     COMMENT="<strong>Here are the latest updates on your deployment.</strong> Explore and star the PR Deploy action 🤖
     <table>
       <thead>
@@ -24,7 +24,6 @@ update_comment() {
         </tr>  
       </tbody>
     </table>"
-    echo $COMMENT
 }
 
 # Make the pr-deploy.sh script executable.
@@ -36,15 +35,15 @@ FILE_NAME="${REPO_OWNER}_${REPO_NAME}_${GITHUB_HEAD_REF}_${PR_NUMBER}"
 
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
-  COMMENT=$(update_comment "Deploying ⏳" "#") 
+  comment "Deploying ⏳" "#") 
   curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
       -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-      "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
+      "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
 fi
 
 # Make an API request to get the comments on the pull request
 RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"  > /dev/null)
 
 # Parse the response to extract the ID of the first comment made by github-actions
 echo "$RESPONSE_DATA"
@@ -58,21 +57,21 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./
 DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_OWNER $REPO_NAME $GITHUB_HEAD_REF $GITHUB_SHA $SERVER_HOST $PR_ACTION $PR_NUMBER | tail -n 1)
 
 if [  -z "$DEPLOYED_URL" ]; then
-    COMMENT=$(update_comment "Failed ❌" "#") 
+    comment "Failed ❌" "#"
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" >/dev/null
+         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 elif [ "$PR_ACTION" == "closed" ]; then
-    COMMENT=$(update_comment "Terminated 🛑" "#") 
+    comment "Terminated 🛑" "#") 
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" >/dev/null
+         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
-    COMMENT=$(update_comment "Deployed 🎉" $DEPLOYED_URL) 
+    comment "Deployed 🎉" $DEPLOYED_URL) 
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
          -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
-         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" >/dev/null
+         "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 fi
