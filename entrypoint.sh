@@ -17,9 +17,9 @@ comment() {
       </thead>
       <tbody>
         <tr>
-          <td><a href=\"https://github.com/hngprojects/pr-deploy\">PR Deploy</a></td>
+          <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
           <td>${1}</td>
-          <td><a href=\"${2}\">Visit Preview</a></td>
+          <td><a href='${2}'>Visit Preview</a></td>
           <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
       </tbody>
