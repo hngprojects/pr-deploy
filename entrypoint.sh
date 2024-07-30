@@ -55,7 +55,7 @@ RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
 
 # Parse the response to extract the ID of the first comment made by github-actions
 echo "$RESPONSE_DATA"
-COMMENT_ID=$(echo "$RESPONSE_DATA" | jq -r '[.[] | select(.user.login == "github-actions")] | first | .id')
+COMMENT_ID=$(echo "$RESPONSE_DATA" | jq -r '[.[] | select(.user.login == "github-actions[bot]")] | first | .id')
 echo $COMMENT_ID
 
 # Copy the pr-deploy.sh script to the remote server.
