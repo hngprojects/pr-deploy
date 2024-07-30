@@ -1,5 +1,5 @@
-name: "HNG-ACTIONS"
-description: "A tool used in workflow script to automate the deployment of each pull request"
+name: "Pull Request Deploy"
+description: "A github action to automate the deployment of pull requests"
 
 inputs:
   server_host:
@@ -20,36 +20,16 @@ inputs:
   dockerfile:
     description: Path to the Dockerfile (optional)
     required: false
-  start_command:
-    description: Command to start the application if Dockerfile is not provided (optional)
-    required: false
-  compose_file:
-    description: Path to the docker-compose.yml file (optional)
-    required: false
   exposed_port:
     description: Port to expose in the container
     required: true
-  env:
+  envs:
     description: Environment variables to pass to the container
-    required: false
-  branch_name:
-    description: The branch name for the github repository that made a pull request
-    required: false
-  repo_url:
-    description: The repository that made the pull request
-    required: false
-  pr_number:
-    description: The pull request number for the trigger.
     required: false
   github_token:
     description: GitHub token to authenticate API requests
     required: true
 
-
-# outputs:
-#   status:
-#     description: Status of the deployment
-#     required: true
 
 runs:
   using: 'composite'
@@ -69,5 +49,4 @@ runs:
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_OWNER: ${{ github.repository_owner }}
         REPO_NAME: ${{ github.event.repository.name }}
-        # PR_NUMBER: ${{ github.event.number }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
