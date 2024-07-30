@@ -10,6 +10,7 @@ REPO_OWNER=$5
 REPO_NAME=$6
 BRANCH=$7
 COMMIT_SHA=$8
+SERVER_HOST=$9
 REPO_DIR="${REPO_OWNER}-${REPO_NAME}"
 
 # Ensure docker is installed
