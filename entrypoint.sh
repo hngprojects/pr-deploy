@@ -37,7 +37,7 @@ FILE_NAME="${REPO_OWNER}_${REPO_NAME}_${GITHUB_HEAD_REF}_${PR_NUMBER}"
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
   curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
-      -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
+      -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
       "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
 fi
 
@@ -57,19 +57,19 @@ DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p 
 if [  -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#"
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
+         -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 elif [ "$PR_ACTION" == "closed" ]; then
     comment "Terminated 🛑" "#"
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
+         -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 else
     comment "Deployed 🎉" $DEPLOYED_URL
     curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-         -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
+         -d "$(jq -n --arg body "${COMMENT}" '{body: $body}')" \
          -H "Accept: application/vnd.github.v3+json" \
          "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/$COMMENT_ID" > /dev/null
 fi
