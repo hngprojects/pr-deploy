@@ -18,29 +18,27 @@ DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p 
 
 # Prepare the comment to be posted on GitHub.
 COMMENT="
-<table style=\"width:100%;border-collapse:collapse;\">
+<table>
   <thead>
-    <tr style=\"background-color:#f2f2f2;\">
-      <th style=\"border:1px solid #ddd;padding:8px;text-align:left;\">Deployed Branch</th>
-      <th style=\"border:1px solid #ddd;padding:8px;text-align:left;\">Status</th>
-      <th style=\"border:1px solid #ddd;padding:8px;text-align:left;\">Preview URL</th>
-      <th style=\"border:1px solid #ddd;padding:8px;text-align:left;\">Updated At</th>
+    <tr>
+      <th>Status</th>
+      <th>Preview URL</th>
+      <th>Updated At (UTC)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style=\"border:1px solid #ddd;padding:8px;\">$GITHUB_HEAD_REF</td>
-      <td style=\"border:1px solid #ddd;padding:8px;\">Deployed</td>
-      <td style=\"border:1px solid #ddd;padding:8px;\"><a href=\"$DEPLOYED_URL\">$DEPLOYED_URL</a></td>
-      <td style=\"border:1px solid #ddd;padding:8px;\">$(date)</td>
-    </tr>
+      <td>Deployed 🚀</td>
+      <td><a href=\"$DEPLOYED_URL\">Preview Link</a></td>
+      <td>$(date +\"%b %d, %Y %I:%M%p\")</td>
+    </tr>  
   </tbody>
 </table>"
 
 # Post the comment on the specified pull request.
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
     -d "$(jq -n --arg body "$COMMENT" '{body: $body}')" \
-    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
 
 # Echo the deployed URL.
 echo "Deployed URL: $DEPLOYED_URL"
