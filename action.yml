@@ -39,8 +39,7 @@ runs:
   steps:
     - name: Run entrypoint.sh
       run: |
-        chmod +x ${{ github.action_path }}/entrypoint.sh
-        ${{ github.action_path }}/entrypoint.sh
+        cd ${{ github.action_path }} && bash entrypoint.sh
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
@@ -57,4 +56,3 @@ runs:
         PR_NUMBER: ${{ github.event.number }}
         PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
