@@ -58,11 +58,11 @@ REPO_ID=$(curl -L \
 
 ls
 pwd
+chmod +x ${GITHUB_PATH}/pr-deploy.sh
 exit 0
 ls ${GITHUB_PATH}/pr-deploy.sh
 
 # Make the pr-deploy.sh script executable.
-chmod +x pr-deploy.sh
 
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
