@@ -66,7 +66,7 @@ case $PR_ACTION in
         [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
 
         # Exit early for 'closed' action
-        [ "$PR_ACTION" == "closed" ] && exit 0
+        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && exit 0
         ;;
 esac
 
