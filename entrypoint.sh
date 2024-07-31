@@ -73,10 +73,12 @@ if [ -z "$DEPLOYED_URL" ]; then
     echo "not deployed"
     if [ "$PR_ACTION" == "closed" ]; then
         echo "terminated"
-        comment "Terminated 🛑" "#" && exit 0
+        comment "Terminated 🛑" "#"
+        exit 0
     fi
     echo "failed"
-    comment "Failed ❌" "#" && exit 1
+    comment "Failed ❌" "#"
+    exit 1
 fi
 echo "deployed"
 comment "Deployed 🎉" $DEPLOYED_URL
