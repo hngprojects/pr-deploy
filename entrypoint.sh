@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-# set -e
+set -e
 
 comment() {
     local status_message=$1
@@ -68,11 +68,12 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
+echo $REMOTE_URL
+echo $PR_ACTION
 if [ -z "$DEPLOYED_URL" ]; then
     if [ "$PR_ACTION" == "closed" ]; then
         comment "Terminated 🛑" "#" && exit 0
     fi
     comment "Failed ❌" "#" && exit 1
 fi
-
 comment "Deployed 🎉" $DEPLOYED_URL
