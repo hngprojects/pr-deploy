@@ -7,6 +7,8 @@ comment() {
     local status_message=$1
     local preview_url=$2
 
+    echo $status_message
+
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 <table>
   <thead>
@@ -38,7 +40,7 @@ comment() {
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}"
     fi
 }
 
@@ -73,12 +75,10 @@ if [ -z "$DEPLOYED_URL" ]; then
     echo "not deployed"
     if [ "$PR_ACTION" == "closed" ]; then
         echo "terminated"
-        comment "Terminated 🛑" "#"
-        exit 0
+        comment "Terminated 🛑" "#" && exit 0
     fi
     echo "failed"
-    comment "Failed ❌" "#"
-    exit 1
+    comment "Failed ❌" "#" && exit 1
 fi
 echo "deployed"
 comment "Deployed 🎉" $DEPLOYED_URL
