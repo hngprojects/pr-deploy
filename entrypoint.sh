@@ -3,6 +3,13 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+function handle_error {
+    comment "Failed ❌" "#" && exit 1
+}
+
+# Set up trap to handle errors
+trap 'handle_error' ERR
+
 comment() {
     local status_message=$1
     local preview_url=$2
