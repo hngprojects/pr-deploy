@@ -56,6 +56,11 @@ REPO_ID=$(curl -L \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
 
+ls
+ls ${GITHUB_PATH}/pr-deploy.sh
+pwd
+exit 0
+
 # Make the pr-deploy.sh script executable.
 chmod +x pr-deploy.sh
 
@@ -64,10 +69,6 @@ if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
-ls
-ls ${GITHUB_PATH}/pr-deploy.sh
-pwd
-exit 0
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
