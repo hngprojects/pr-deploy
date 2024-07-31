@@ -2,18 +2,16 @@
 
 set -e
 
-CONTEXT=${1:-""}
+CONTEXT=$1
 DOCKERFILE=$2
 EXPOSED_PORT=$3
 REPO_URL=$4
-REPO_OWNER=$5
-REPO_NAME=$6
-BRANCH=$7
-COMMIT_SHA=$8
-SERVER_HOST=$9
-PR_ACTION="${10}"
-PR_NUMBER="${11}"
-REPO_DIR="${REPO_OWNER}-${REPO_NAME}"
+REPO_ID=$5
+BRANCH=$6
+PR_ACTION=$7
+PR_NUMBER=$8
+COMMENT_ID=$9
+PR_ID="${REPO_ID}${PR_NUMBER}"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -30,65 +28,47 @@ fi
 # free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-mkdir -p /srv/hngprojects
+# setup directory
+mkdir -p /srv/hngprojects/
 cd /srv/hngprojects
+rm -rf $PR_ID
 
-# remove existing folder path
-rm -rf $REPO_DIR
-
-# clone the repository
-git clone -b $BRANCH $REPO_URL $REPO_DIR
-cd $REPO_DIR
-
-# Checks if the context directory exists
-if [ ! -d "$CONTEXT" ]; then
-    echo "Context directory does not exist..."
-    exit 1
+if [ -n "$COMMENT_ID" ]; then
+    echo "$COMMENT_ID" > "${PR_ID}.txt"
+else
+    COMMENT_ID=$(cat "${PR_ID}.txt")
 fi
 
-# Checks exposed port is provided
-if [ ! -n "$EXPOSED_PORT" ]; then
-    echo "Exposed port not provided, You must provide an exposed port..."
-    exit 1
-fi
+# Get container and image IDs
+CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
+IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
 
-CONTAINERS=$(docker ps -aq --filter "label=branch=$BRANCH")
-IMAGES=$(docker images -q --filter "label=branch=$BRANCH")
+# Handle different PR actions
 case $PR_ACTION in
-    reopened | synchronize)
-    	if [ -n "$CONTAINERS" ]; then
- 	    	sudo docker stop $CONTAINERS
-	     	sudo docker rm $CONTAINERS
- 	       	sudo docker rmi $IMAGES
-	fi
-        ;;
-    closed)
-     	if [ -n "$CONTAINERS" ]; then
- 	    	sudo docker stop $CONTAINERS
-	     	sudo docker rm $CONTAINERS
-	       	sudo docker rmi $IMAGES
-	fi
-    	exit 0
+    reopened | synchronize | closed)
+        # Stop and force remove containers if they exist
+        [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
+        
+        # Force remove images if they exist
+        [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
+
+        # Exit early for 'closed' action
+        [ "$PR_ACTION" == "closed" ] && exit 0
         ;;
 esac
 
+git clone -b $BRANCH $REPO_URL $PR_ID
+cd $PR_ID
 cd $CONTEXT
-if [ -n "$DOCKERFILE" ]; then
-    if [ -f "$DOCKERFILE" ]; then
-	echo "Building docker image..."
-        sudo docker build --label branch=$BRANCH -t $COMMIT_SHA -f $DOCKERFILE .
-        sudo docker run -d --label branch=$BRANCH -p $FREE_PORT:$EXPOSED_PORT --name $COMMIT_SHA $COMMIT_SHA
-    else
-        echo "Docker file does not exist"
-    fi
-else
-    echo "Dockerfile variable is empty, you must provide a Dockerfile..."
-fi
+
+echo "Building docker image..."
+sudo docker build -t $PR_ID -f $DOCKERFILE .
+sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 # Set up tunneling using Serveo with a random high-numbered port
-nohup ssh -tt -o StrictHostKeyChecking=no -R 80:$SERVER_HOST:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
+nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 sleep 3
 
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
-echo $DEPLOYED_URL
+echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
