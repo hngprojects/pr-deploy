@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 
 CONTEXT=$1
 DOCKERFILE=$2
