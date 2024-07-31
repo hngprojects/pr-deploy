@@ -93,7 +93,7 @@ nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net 
 sleep 3
 
 # Check if Serveo tunnel was set up successfully
-if [ ! check_serveo ]; then
+if [ check_serveo ]; then
     DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 else
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT ssh.localhost.run > localhost_run_output.log 2>&1 &
