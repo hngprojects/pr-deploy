@@ -58,7 +58,7 @@ REPO_ID=$(curl -L \
 
 ls
 pwd
-chmod +x /home/runner/work/_actions/hngprojects/pr-deploy/main/pr-deploy.sh
+chmod +x ${GITHUB_ACTION_PATH}/pr-deploy.sh
 exit 0
 ls /home/runner/work/_actions/hngprojects/pr-deploy/main/pr-deploy.sh
 
