@@ -29,10 +29,10 @@ comment() {
 
     if [ -z "$COMMENT_ID" ]; then
         # Create a new comment
-        curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+        COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" > /dev/null
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
     else
         # Update an existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
@@ -42,30 +42,27 @@ comment() {
     fi
 }
 
+REPO_ID=$(curl -L \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
+
 # Make the pr-deploy.sh script executable.
 chmod +x pr-deploy.sh
-
-# Define the file to store the comment ID
-FILE_NAME="${REPO_OWNER}_${REPO_NAME}_${GITHUB_HEAD_REF}_${PR_NUMBER}"
-# COMMENT_ID_FILE="${GITHUB_WORKSPACE}/${FILE_NAME}.txt"
 
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
-# Make an API request to get the comments on the pull request
-RESPONSE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments")
-
-# Parse the response to extract the ID of the first comment made by github-actions
-COMMENT_ID=$(echo "$RESPONSE_DATA" | jq -r '[.[] | select(.user.login == "github-actions[bot]")] | first | .id')
-
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
-# Run the pr-deploy.sh script on the remote server and capture the last line of its output.
-DEPLOYED_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_OWNER $REPO_NAME $GITHUB_HEAD_REF $GITHUB_SHA $SERVER_HOST $PR_ACTION $PR_NUMBER | tail -n 1)
+# Run the pr-deploy.sh script on the remote server and capture the output from the remote script
+REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID)
+
+COMMENT_ID=$(echo "$REMOTE_OUTPUT" | jq -r '.COMMENT_ID')
+DEPLOYED_URL=$(echo "$REMOTE_OUTPUT" | jq -r '.DEPLOYED_URL')
 
 if [  -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#"
