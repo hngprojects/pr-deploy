@@ -3,6 +3,13 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+function handle_error {
+    comment "Failed ❌" "#" && exit 1
+}
+
+# Set up trap to handle errors
+trap 'handle_error' ERR
+
 comment() {
     local status_message=$1
     local preview_url=$2
@@ -49,19 +56,16 @@ REPO_ID=$(curl -L \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
 
-# Make the pr-deploy.sh script executable.
-chmod +x pr-deploy.sh
-
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
 # Copy the pr-deploy.sh script to the remote server.
-sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
+sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
 # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
-REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
+REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
 
 # Ensure the output is valid JSON by escaping problematic characters
 SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
