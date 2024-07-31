@@ -12,10 +12,21 @@ PR_ACTION=$7
 PR_NUMBER=$8
 COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
+# JSON file to store PIDs
+PID_FILE="tunnel_pids.json"
 
 function handle_error {
     echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
     exit 1
+}
+
+function kill_process_with_pid() {
+    # serveo
+    local key=$1
+    ID=$(jq -r --arg key "$key" '.[$key]' "/srv/hngprojects/${PR_ID}/${PID_FILE}")
+    if [ -n $ID ]; then
+        kill -9 $ID
+    fi
 }
 
 # Set up trap to handle errors
@@ -66,7 +77,7 @@ case $PR_ACTION in
         [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
 
         # Exit early for 'closed' action
-        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && exit 0
+        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && kill_process_with_pid "serveo" && exit 0
         ;;
 esac
 
@@ -83,28 +94,28 @@ sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
 
-# Checks if serveo 
-# check_serveo() {
-#     grep -q "ssh: connect to host serveo.net port 22: Connection refused" serveo_output.log  || grep -q "ssh: connect to host serveo.net port 22: Connection timed out" serveo_output.log
-# }
+# Initialize the JSON file if it doesn't exist
+if [ ! -f "$PID_FILE" ]; then
+    echo "{}" > "$PID_FILE"
+fi
 
+# function to check if serveo was successful
+# check_serveo() {
+#     grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}'
+# }
 # Set up tunneling using Serveo with a random high-numbered port
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
+SERVEO_PID=$!
 sleep 3
 
-# # Check if Serveo tunnel was set up successfully
-# if [ check_serveo ]; then
+
+# Check if Serveo tunnel was set up successfully
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
-# else
-    # nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT ssh.localhost.run > localhost_run_output.log 2>&1 &
-    # sleep 30
-    # # if grep -q "Connect to" localhost_run_output.log; then
-    #     DEPLOYED_URL=$(grep "tunneled with tls termination" localhost_run_output.log | awk '{print $NF}')
-    # else
-    #     DEPLOYED_URL=""
-    # fi
-# fi
+
+if [ -n DEPLOYED_URL ]; then
+    jq --arg pid "$SERVEO_PID" '.serveo = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
+fi
 
 
 # Output the final JSON
-echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
+echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\", \"SERVEO_PID\": \"$SERVEO_PID\"}"
