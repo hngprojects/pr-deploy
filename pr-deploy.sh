@@ -13,7 +13,11 @@ PR_NUMBER=$8
 COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 
-echo "PR ID: $PR_ID"
+function handle_error {
+    echo "{\"COMMENT_ID\": \"$COMMENT_ID\"}"
+    exit 1
+}
+trap 'handle_error' ERR
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -27,18 +31,23 @@ if [ ! command -v python3 &> /dev/null ]; then
     sudo apt-get install python3 -y
 fi
 
-# free port
+# Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-# setup directory
+# Setup directory
 mkdir -p /srv/hngprojects/
 cd /srv/hngprojects
 rm -rf $PR_ID
 
+# Handle COMMENT_ID
 if [ -n "$COMMENT_ID" ]; then
     echo "$COMMENT_ID" > "${PR_ID}.txt"
 else
-    COMMENT_ID=$(cat "${PR_ID}.txt")
+    if [ -f "${PR_ID}.txt" ]; then
+        COMMENT_ID=$(cat "${PR_ID}.txt")
+    else
+        COMMENT_ID=""
+    fi
 fi
 
 # Get container and image IDs
@@ -59,13 +68,14 @@ case $PR_ACTION in
         ;;
 esac
 
+# Git clone and Docker operations
 echo "Git Clone ..."
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID
-# cd $CONTEXT
 
 echo "Building docker image..."
 sudo docker build -t $PR_ID -f $DOCKERFILE .
+
 echo "Running docker container..."
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
@@ -74,7 +84,7 @@ echo "Start SSH session..."
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 sleep 3
 
-
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
+# Output the final JSON
 echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
