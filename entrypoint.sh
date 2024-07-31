@@ -58,9 +58,9 @@ REPO_ID=$(curl -L \
 
 ls
 pwd
-chmod +x ${GITHUB_PATH}/pr-deploy.sh
+chmod +x /home/runner/work/_actions/hngprojects/pr-deploy/main/pr-deploy.sh
 exit 0
-ls ${GITHUB_PATH}/pr-deploy.sh
+ls /home/runner/work/_actions/hngprojects/pr-deploy/main/pr-deploy.sh
 
 # Make the pr-deploy.sh script executable.
 
