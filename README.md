@@ -1,14 +1,11 @@
- # GitHub Action Tool: Pr-deploy
-## Release: v1.0.0
-
-### About
+ # About
 
 This GitHub Action deploys pull requests in Docker containers, allowing you to test your changes in an isolated environment before merging. This documentation has been sectioned into two; First section for Contributors and the Second section for User
 
 
 
-**For Users**
-------------------------------------------------------------------------------------------------------------------
+## For Users
+
 ## Usage
 Pull request events trigger this action. It builds the Docker image for the pull request and deploys it in a new Docker container. This step calls the action tool in the workflow script
 ```
