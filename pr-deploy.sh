@@ -13,17 +13,20 @@ PR_NUMBER=$8
 COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
-PID_FILE="tunnel_pids.json"
+PID_FILE="/srv/pr-deploy/nohup_pids.json"
+COMMENT_ID_FILE="/srv/pr-deploy/comment_ids.json"
+DEPLOY_FOLDER="/srv/pr-deploy"
 
 function handle_error {
     echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
     exit 1
 }
 
+# This helps to kill the process created by nohup using the process id
 function kill_process_with_pid() {
     # serveo
     local key=$1
-    ID=$(jq -r --arg key "$key" '.[$key]' "/srv/hngprojects/${PR_ID}/${PID_FILE}")
+    ID=$(jq -r --arg key "$key" '.[$key]' "${PID_FILE}")
     if [ -n $ID ]; then
         kill -9 $ID
     fi
@@ -48,16 +51,17 @@ fi
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 # Setup directory
-mkdir -p /srv/hngprojects/
-cd /srv/hngprojects
+mkdir -p ${DEPLOY_FOLDER}/
+cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
 
 # Handle COMMENT_ID
 if [ -n "$COMMENT_ID" ]; then
-    echo "$COMMENT_ID" > "${PR_ID}.txt"
+    # echo "$COMMENT_ID" > "${PR_ID}.txt"
+    jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
 else
-    if [ -f "${PR_ID}.txt" ]; then
-        COMMENT_ID=$(cat "${PR_ID}.txt")
+    if [ -f "$COMMENT_ID_FILE" ]; then
+        COMMENT_ID=$(jq -r --arg key "$PR_ID" '.[$key]' "$COMMENT_ID_FILE")
     else
         COMMENT_ID=""
     fi
@@ -77,7 +81,7 @@ case $PR_ACTION in
         [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
 
         # Exit early for 'closed' action
-        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && kill_process_with_pid "serveo" && exit 0
+        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && kill_process_with_pid $PR_ID && exit 0
         ;;
 esac
 
@@ -94,9 +98,14 @@ sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
 
-# Initialize the JSON file if it doesn't exist
+# Initialize the JSON file for nohup if it doesn't exist
 if [ ! -f "$PID_FILE" ]; then
     echo "{}" > "$PID_FILE"
+fi
+
+# Initialize the JSON file for comment if it doesn't exist
+if [ ! -f "$COMMENT_FILE" ]; then
+    echo "{}" > "$COMMENT_FILE"
 fi
 
 # function to check if serveo was successful
@@ -112,10 +121,13 @@ sleep 3
 # Check if Serveo tunnel was set up successfully
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
+# update the nohup ids
 if [ -n DEPLOYED_URL ]; then
-    jq --arg pid "$SERVEO_PID" '.serveo = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
+    # jq --arg pid "$SERVEO_PID" '.serveo = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
+    jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
+
 fi
 
 
 # Output the final JSON
-echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\", \"SERVEO_PID\": \"$SERVEO_PID\"}"
+echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
