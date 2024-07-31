@@ -56,8 +56,6 @@ REPO_ID=$(curl -L \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
 
-echo "pr action >> $PR_ACTION"
-
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
