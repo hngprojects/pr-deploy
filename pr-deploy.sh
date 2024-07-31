@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set -e
+set -e
 
 CONTEXT=$1
 DOCKERFILE=$2
@@ -17,6 +17,8 @@ function handle_error {
     echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
     exit 1
 }
+
+# Set up trap to handle errors
 trap 'handle_error' ERR
 
 # Ensure docker is installed
