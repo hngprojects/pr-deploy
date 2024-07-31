@@ -54,19 +54,15 @@ chmod +x pr-deploy.sh
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
-echo "Before"
 
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
 # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
-REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID)
-# sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID
-echo "After"
+REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
 
-echo "Remote output: $REMOTE_OUTPUT"
-# COMMENT_ID=$(echo "$REMOTE_OUTPUT" | jq -r '.COMMENT_ID')
-# DEPLOYED_URL=$(echo "$REMOTE_OUTPUT" | jq -r '.DEPLOYED_URL')
+COMMENT_ID=$(echo "$REMOTE_OUTPUT" | jq -r '.COMMENT_ID')
+DEPLOYED_URL=$(echo "$REMOTE_OUTPUT" | jq -r '.DEPLOYED_URL')
 
 if [  -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#"
