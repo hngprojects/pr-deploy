@@ -65,16 +65,16 @@ cd $PR_ID
 # cd $CONTEXT
 
 echo "Building docker image..."
-# sudo docker build -t $PR_ID -f $DOCKERFILE .
+sudo docker build -t $PR_ID -f $DOCKERFILE .
 echo "Running docker container..."
-# sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
 # Set up tunneling using Serveo with a random high-numbered port
-# nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
+nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 sleep 3
 
 
-# DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
 echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
