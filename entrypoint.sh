@@ -56,17 +56,13 @@ REPO_ID=$(curl -L \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
 
-chmod +x ${GITHUB_ACTION_PATH}/pr-deploy.sh
-
-# Make the pr-deploy.sh script executable.
-
 # Checks if the action is opened
 if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
 # Copy the pr-deploy.sh script to the remote server.
-sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ${GITHUB_ACTION_PATH}/pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
+sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT bash pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
 # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
 REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
