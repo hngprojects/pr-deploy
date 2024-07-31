@@ -98,11 +98,11 @@ echo "Start SSH session..."
 # else
     nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT ssh.localhost.run > localhost_run_output.log 2>&1 &
     sleep 30
-    if grep -q "Connect to" localhost_run_output.log; then
+    # if grep -q "Connect to" localhost_run_output.log; then
         DEPLOYED_URL=$(grep "tunneled with tls termination" localhost_run_output.log | awk '{print $NF}')
-    else
-        DEPLOYED_URL=""
-    fi
+    # else
+    #     DEPLOYED_URL=""
+    # fi
 # fi
 
 
