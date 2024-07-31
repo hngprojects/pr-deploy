@@ -1,7 +1,8 @@
 name: "Pull Request Deploy"
 description: "A github action to automate the deployment of pull requests"
-icon: "cloud"
-color: "blue"
+branding:
+  icon: "cloud"
+  color: "blue"
 
 inputs:
   server_host:
