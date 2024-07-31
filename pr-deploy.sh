@@ -11,7 +11,9 @@ BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
 COMMENT_ID=$9
-PR_ID="${REPO_ID}${PR_NUMBER}"
+PR_ID="pr_${REPO_ID}${PR_NUMBER}"
+
+echo "PR ID: $PR_ID"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
