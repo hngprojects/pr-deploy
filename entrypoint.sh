@@ -76,7 +76,7 @@ DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
 echo "commentId >> $COMMENT_ID"
 
-if [ -z "$COMMENT_ID" ]; then
+if [ "$COMMENT_ID" == "null" ]; then
     # Checks if the action is opened
     if [[ "$PR_ACTION" == "opened" || "$PR_ACTION" == "synchronize" || "$PR_ACTION" == "reopened" ]]; then
         comment "Deploying ⏳" "#"
