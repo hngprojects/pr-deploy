@@ -57,9 +57,9 @@ REPO_ID=$(curl -L \
   https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
 
 ls
-ls ${GITHUB_PATH}/pr-deploy.sh
 pwd
 exit 0
+ls ${GITHUB_PATH}/pr-deploy.sh
 
 # Make the pr-deploy.sh script executable.
 chmod +x pr-deploy.sh
