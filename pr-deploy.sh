@@ -65,7 +65,7 @@ cd $PR_ID
 # cd $CONTEXT
 
 echo "Building docker image..."
-sudo docker build -t $PR_ID -f $DOCKERFILE .
+# sudo docker build -t $PR_ID -f $DOCKERFILE .
 echo "Running docker container..."
 # sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
