@@ -61,9 +61,18 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./
 # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
 REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
 
-echo "Remote Output: $REMOTE_OUTPUT"
-COMMENT_ID=$(echo "$REMOTE_OUTPUT" | jq -r '.COMMENT_ID')
-DEPLOYED_URL=$(echo "$REMOTE_OUTPUT" | jq -r '.DEPLOYED_URL')
+# Debug the raw output
+echo "Raw Remote Output: $REMOTE_OUTPUT"
+
+# Ensure the output is valid JSON by escaping problematic characters
+SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
+
+# Parse the sanitized JSON
+COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
+DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
+
+echo "Comment ID: $COMMENT_ID"
+echo "Deployed URL: $DEPLOYED_URL"
 
 if [  -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#"
