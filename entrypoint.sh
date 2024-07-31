@@ -64,6 +64,7 @@ if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
+ls $GITHUB_PATH
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
