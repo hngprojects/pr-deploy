@@ -14,7 +14,7 @@ COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 
 function handle_error {
-    echo "{\"COMMENT_ID\": \"$COMMENT_ID\"}"
+    echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
     exit 1
 }
 trap 'handle_error' ERR
