@@ -74,6 +74,7 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
+echo $COMMENT_ID
 # TO BE REMOVED LATER
 echo "$SANITIZED_OUTPUT" | jq -r '.SERVEO_PID'
 
