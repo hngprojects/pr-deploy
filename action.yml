@@ -37,6 +37,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Run entrypoint.sh
       run: chmod +x entrypoint.sh && ./entrypoint.sh
       shell: bash
