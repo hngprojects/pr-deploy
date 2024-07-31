@@ -56,6 +56,10 @@ comment() {
         #sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
         # sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash -c "jq --arg pr_id \"$PR_ID\" --arg cid \"$COMMENT_ID\" '.[$pr_id] = \$cid' \"$COMMENT_ID_FILE\" > tmp.\$\$.json && mv tmp.\$\$.json \"$COMMENT_ID_FILE\""
         sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST <<EOF
+            if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
+                echo "{}" > "$COMMENT_ID_FILE"
+            fi
+            
             jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = \$cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
 EOF
     else
