@@ -33,6 +33,16 @@ function kill_process_with_pid() {
     fi
 }
 
+# Initialize the JSON file for nohup if it doesn't exist
+if [ ! -f "$PID_FILE" ]; then
+    echo "{}" > "$PID_FILE"
+fi
+
+# Initialize the JSON file for comment if it doesn't exist
+if [ ! -f "$COMMENT_ID_FILE" ]; then
+    echo "{}" > "$COMMENT_ID_FILE"
+fi
+
 # Set up trap to handle errors
 trap 'handle_error' ERR
 
@@ -99,16 +109,6 @@ echo "Running docker container..."
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
-
-# Initialize the JSON file for nohup if it doesn't exist
-if [ ! -f "$PID_FILE" ]; then
-    echo "{}" > "$PID_FILE"
-fi
-
-# Initialize the JSON file for comment if it doesn't exist
-if [ ! -f "$COMMENT_ID_FILE" ]; then
-    echo "{}" > "$COMMENT_ID_FILE"
-fi
 
 # function to check if serveo was successful
 # check_serveo() {
