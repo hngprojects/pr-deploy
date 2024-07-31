@@ -16,6 +16,6 @@ jobs:
           server_password: ${{ secrets.SERVER_PASSWORD }}
           server_port: ${{ secrets.SERVER_PORT }}
           context: '.'
-          dockerfile: 'Dockerfiles'
+          dockerfile: 'Dockerfile'
           exposed_port: '5000'
           github_token: ${{ secrets.GITHUB_TOKEN }}
