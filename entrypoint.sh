@@ -67,6 +67,7 @@ fi
 ls
 ls ${GITHUB_PATH}/pr-deploy.sh
 pwd
+exit 0
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT ./pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
