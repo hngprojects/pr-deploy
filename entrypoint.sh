@@ -28,7 +28,7 @@ comment() {
   </thead>
   <tbody>
     <tr>
-      <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
+      <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
       <td>${status_message}</td>
       <td><a href='${preview_url}'>Visit Preview</a></td>
       <td>$(date +'%b %d, %Y %I:%M%p')</td>
