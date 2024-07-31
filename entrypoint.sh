@@ -40,7 +40,7 @@ comment() {
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}"
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
     fi
 }
 
