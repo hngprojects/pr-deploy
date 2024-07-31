@@ -68,10 +68,11 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
-if [  -z "$DEPLOYED_URL" ]; then
+if [ -z "$DEPLOYED_URL" ]; then
+    if [ "$PR_ACTION" == "closed" ]; then
+        comment "Terminated 🛑" "#" && exit 0
+    fi
     comment "Failed ❌" "#" && exit 1
-elif [ "$PR_ACTION" == "closed" ]; then
-    comment "Terminated 🛑" "#"
-else
-    comment "Deployed 🎉" $DEPLOYED_URL
 fi
+
+comment "Deployed 🎉" $DEPLOYED_URL
