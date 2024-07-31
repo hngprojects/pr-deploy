@@ -29,6 +29,7 @@ function kill_process_with_pid() {
     ID=$(jq -r --arg key "$key" '.[$key]' "${PID_FILE}")
     if [ -n $ID ]; then
         kill -9 $ID
+        jq --arg key "$key" 'del(.[$key])' "${PID_FILE}" > tmp && mv tmp "${PID_FILE}"
     fi
 }
 
