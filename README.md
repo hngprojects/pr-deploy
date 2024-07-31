@@ -36,7 +36,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Deploy PR
         uses: hngprojects/pr-deploy@v1.0.0
         with:
