@@ -105,6 +105,8 @@ if [ "$COMMENT_ID" == "null" ]; then
     fi
 fi
 
+echo "commentId2 >> $COMMENT_ID"
+
 if [ -z "$DEPLOYED_URL" ]; then
     if [ "$PR_ACTION" == "closed" ]; then
         comment "Terminated 🛑" "#" && exit 0
