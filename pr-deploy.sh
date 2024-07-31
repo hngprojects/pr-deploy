@@ -61,7 +61,8 @@ if [ -n "$COMMENT_ID" ]; then
     jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
 else
     if [ -f "$COMMENT_ID_FILE" ]; then
-        COMMENT_ID=$(jq -r --arg key "$PR_ID" '.[$key]' "$COMMENT_ID_FILE")
+        COMMENT_ID=$(jq -r --arg key "$PR_ID" '.[$key]' "${COMMENT_ID_FILE}")
+
     else
         COMMENT_ID=""
     fi
