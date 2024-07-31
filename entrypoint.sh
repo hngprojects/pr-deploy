@@ -75,7 +75,7 @@ echo "Comment ID: $COMMENT_ID"
 echo "Deployed URL: $DEPLOYED_URL"
 
 if [  -z "$DEPLOYED_URL" ]; then
-    comment "Failed ❌" "#"
+    comment "Failed ❌" "#" && exit 1
 elif [ "$PR_ACTION" == "closed" ]; then
     comment "Terminated 🛑" "#"
 else
