@@ -74,6 +74,15 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
+if [ -z "$COMMENT_ID" ]; then
+    # Checks if the action is opened
+    if [[ "$PR_ACTION" == "opened" || "$PR_ACTION" == "synchronize" || "$PR_ACTION" == "reopened" ]]; then
+        comment "Deploying ⏳" "#"
+    elif [ "$PR_ACTION" == "closed" ]; then
+        comment "Terminated 🛑" "#" && exit 0
+    fi
+fi
+
 if [ -z "$DEPLOYED_URL" ]; then
     if [ "$PR_ACTION" == "closed" ]; then
         comment "Terminated 🛑" "#" && exit 0
