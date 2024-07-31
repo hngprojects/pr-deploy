@@ -88,18 +88,18 @@ echo "Start SSH session..."
 #     grep -q "ssh: connect to host serveo.net port 22: Connection refused" serveo_output.log  || grep -q "ssh: connect to host serveo.net port 22: Connection timed out" serveo_output.log
 # }
 
-# # Set up tunneling using Serveo with a random high-numbered port
-# nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
-# sleep 3
+# Set up tunneling using Serveo with a random high-numbered port
+nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
+sleep 3
 
 # # Check if Serveo tunnel was set up successfully
 # if [ check_serveo ]; then
-#     DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 # else
-    nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT ssh.localhost.run > localhost_run_output.log 2>&1 &
-    sleep 30
-    # if grep -q "Connect to" localhost_run_output.log; then
-        DEPLOYED_URL=$(grep "tunneled with tls termination" localhost_run_output.log | awk '{print $NF}')
+    # nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT ssh.localhost.run > localhost_run_output.log 2>&1 &
+    # sleep 30
+    # # if grep -q "Connect to" localhost_run_output.log; then
+    #     DEPLOYED_URL=$(grep "tunneled with tls termination" localhost_run_output.log | awk '{print $NF}')
     # else
     #     DEPLOYED_URL=""
     # fi
