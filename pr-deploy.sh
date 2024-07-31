@@ -13,8 +13,8 @@ PR_NUMBER=$8
 COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
-PID_FILE="/srv/pr-deploy/nohup_pids.json"
-COMMENT_ID_FILE="/srv/pr-deploy/comment_ids.json"
+PID_FILE="/srv/pr-deploy/nohup.json"
+COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 DEPLOY_FOLDER="/srv/pr-deploy"
 
 function handle_error {
