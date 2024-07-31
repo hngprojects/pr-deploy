@@ -57,4 +57,4 @@ runs:
         PR_NUMBER: ${{ github.event.number }}
         PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
-        GITHUB_PATH: ${{ github.action_path }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
