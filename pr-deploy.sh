@@ -104,8 +104,8 @@ if [ ! -f "$PID_FILE" ]; then
 fi
 
 # Initialize the JSON file for comment if it doesn't exist
-if [ ! -f "$COMMENT_FILE" ]; then
-    echo "{}" > "$COMMENT_FILE"
+if [ ! -f "$COMMENT_ID_FILE" ]; then
+    echo "{}" > "$COMMENT_ID_FILE"
 fi
 
 # function to check if serveo was successful
