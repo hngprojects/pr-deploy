@@ -2,7 +2,7 @@
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
-UPDATE_COMMENT_ID=false
+UPDATE_COMMENT_ID="666"
 
 function handle_error {
     comment "Failed ❌" "#" && exit 1
