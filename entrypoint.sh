@@ -60,7 +60,7 @@ comment() {
                 echo "{}" > "$COMMENT_ID_FILE"
             fi
             
-            jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = \$cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
+            jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = \$cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
 EOF
     else
         # Update an existing comment
