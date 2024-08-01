@@ -55,13 +55,34 @@ comment() {
         # Run the pr-deploy.sh script to update the comments.json file
         #sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
         # sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash -c "jq --arg pr_id \"$PR_ID\" --arg cid \"$COMMENT_ID\" '.[$pr_id] = \$cid' \"$COMMENT_ID_FILE\" > tmp.\$\$.json && mv tmp.\$\$.json \"$COMMENT_ID_FILE\""
-        sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST <<EOF
-            if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
-                echo "{}" > "$COMMENT_ID_FILE"
-            fi
+#         sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST <<EOF
+#             if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
+#                 echo "{}" > "$COMMENT_ID_FILE"
+#             fi
             
-            jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
+#             jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
+# EOF
+
+sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST <<EOF
+    # Debugging: Output the file path and check file existence
+    echo "COMMENT_ID_FILE is set to: $COMMENT_ID_FILE"
+    ls -l "$COMMENT_ID_FILE"
+
+    if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
+        echo "{}" > "$COMMENT_ID_FILE"
+    fi
+
+    # Debugging: Output the PR_ID and COMMENT_ID
+    echo "PR_ID: $PR_ID" >> "./debugging.log"
+    echo "COMMENT_ID: $COMMENT_ID" >> "./debugging.log"
+
+    # Run jq command to update the JSON file
+    jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = \$cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
+
+    # Debugging: Check the content of the file after update
+    cat "$COMMENT_ID_FILE" >> "./debugging.log"
 EOF
+
     else
         # Update an existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
