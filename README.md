@@ -10,7 +10,7 @@ This GitHub Action deploys pull requests in Docker containers, allowing you to t
 Pull request events trigger this action. It builds the Docker image for the pull request and deploys it in a new Docker container. This step calls the action tool in the workflow script
 ```
 steps:
-- uses: hngprojects/pr-deploy@v1.0.0
+- uses: hngprojects/pr-deploy@v1.1.6
 ```
 ## Inputs
 The following inputs are required to configure the GitHub Action. These inputs allow the action to connect to your server, specify the:
@@ -30,14 +30,15 @@ Your workflow file should be formatted as follows:
 ```
 name: PR Deploy
 on:
-  pull_request
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy PR
-        uses: hngprojects/pr-deploy@v1.0.0
+        uses: hngprojects/pr-deploy@v1.1.6
         with:
           server_host: ${{ secrets.SERVER_HOST }}
           server_username: ${{ secrets.SERVER_USERNAME }}
@@ -46,7 +47,7 @@ jobs:
           context: '.'
           dockerfile: 'Dockerfile'
           exposed_port: '5000'
-          compose_file: 'docker-compose.yml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 
