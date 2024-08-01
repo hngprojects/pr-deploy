@@ -33,6 +33,9 @@ function kill_process_with_pid() {
     fi
 }
 
+# Setup directory
+mkdir -p ${DEPLOY_FOLDER}/
+
 # Initialize the JSON file for nohup if it doesn't exist
 if [ ! -f "$PID_FILE" ]; then
     echo "{}" > "$PID_FILE"
@@ -61,8 +64,8 @@ fi
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-# Setup directory
-mkdir -p ${DEPLOY_FOLDER}/
+# # Setup directory
+# mkdir -p ${DEPLOY_FOLDER}/
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
 
