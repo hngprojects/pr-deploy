@@ -49,22 +49,6 @@ comment() {
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
-
-        # UPDATE_COMMENT_ID=true
-
-        # # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
-        # NEW_REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID $UPDATE_COMMENT_ID | tail -n 1)
-
-# sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST <<EOF
-
-#     if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
-#         echo "{}" > "$COMMENT_ID_FILE"
-#     fi
-
-#     # Run jq command to update the JSON file
-#     jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = \$cid' "$COMMENT_ID_FILE" > tmp.\$\$.json && mv tmp.\$\$.json "$COMMENT_ID_FILE"
-# EOF
-
     else
         # Update an existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
@@ -97,8 +81,6 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
 
-echo "commentId >> $COMMENT_ID"
-
 if [ "$COMMENT_ID" == "null" ]; then
     # Checks if the action is opened
     if [[ "$PR_ACTION" == "opened" || "$PR_ACTION" == "synchronize" || "$PR_ACTION" == "reopened" ]]; then
@@ -107,7 +89,6 @@ if [ "$COMMENT_ID" == "null" ]; then
         comment "Terminated 🛑" "#"
     fi
     
-    echo "commentId2 >> $COMMENT_ID"
     # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
     NEW_REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
     exit 0
