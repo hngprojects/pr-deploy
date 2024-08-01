@@ -49,7 +49,7 @@ jobs:
           exposed_port: '5000'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
-
+**NOTE: your SERVER_PORT must be port 22**
 
 ## For Contributors
 ### Overview
