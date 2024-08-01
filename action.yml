@@ -19,10 +19,10 @@ inputs:
     required: true
   context:
     description: Directory in the repository where the Dockerfile or start command is located
-    default: "./"
+    required: false
   dockerfile:
     description: Path to the Dockerfile (optional)
-    required: false
+    default: "./Dockerfile"
   exposed_port:
     description: Port to expose in the container
     required: true

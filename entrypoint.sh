@@ -28,7 +28,7 @@ comment() {
   </thead>
   <tbody>
     <tr>
-      <td><a href='https://github.com/hngprojects/pr-deploy'>PR Deploy</a></td>
+      <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
       <td>${status_message}</td>
       <td><a href='${preview_url}'>Visit Preview</a></td>
       <td>$(date +'%b %d, %Y %I:%M%p')</td>
@@ -37,6 +37,13 @@ comment() {
 </table>" '{body: $body}')
 
     if [ -z "$COMMENT_ID" ]; then
+        # Create a new comment
+        COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+            -d "$comment_body" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
+
+    elif [ "$COMMENT_ID" == "null" ]; then
         # Create a new comment
         COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
             -d "$comment_body" \
@@ -73,6 +80,19 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 # Parse the sanitized JSON
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
+
+if [ "$COMMENT_ID" == "null" ]; then
+    # Checks if the action is opened
+    if [[ "$PR_ACTION" == "opened" || "$PR_ACTION" == "synchronize" || "$PR_ACTION" == "reopened" ]]; then
+        comment "Deploying ⏳" "#"
+    elif [ "$PR_ACTION" == "closed" ]; then
+        comment "Terminated 🛑" "#"
+    fi
+    
+    # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
+    NEW_REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER $COMMENT_ID | tail -n 1)
+    exit 0
+fi
 
 if [ -z "$DEPLOYED_URL" ]; then
     if [ "$PR_ACTION" == "closed" ]; then
