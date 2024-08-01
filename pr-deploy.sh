@@ -16,7 +16,6 @@ PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 PID_FILE="/srv/pr-deploy/nohup.json"
 COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 DEPLOY_FOLDER="/srv/pr-deploy"
-UPDATE_COMMENT_ID=${10}
 
 function handle_error {
     echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
@@ -66,16 +65,6 @@ FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); pri
 mkdir -p ${DEPLOY_FOLDER}/
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
-
-# Handle UPDATE_COMMENT_ID
-if [ "$UPDATE_COMMENT_ID" == "true" ]; then
-    if [ ! -f "$COMMENT_ID_FILE" ] || [ ! -s "$COMMENT_ID_FILE" ]; then
-        echo "{}" > "$COMMENT_ID_FILE"
-    fi
-    
-    # Run jq command to update the JSON file
-    jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
-fi
 
 # Handle COMMENT_ID
 if [ -n "$COMMENT_ID" ]; then
