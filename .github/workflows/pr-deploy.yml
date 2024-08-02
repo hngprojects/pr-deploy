@@ -21,4 +21,6 @@ jobs:
           dockerfile: 'Dockerfile'
           exposed_port: '5000'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          envs: VITE_API_URL=http://localhost:5000,NODE_ENV=production
+          envs: |
+            VITE_API_URL=http://localhost:5000
+            NODE_ENV=production
