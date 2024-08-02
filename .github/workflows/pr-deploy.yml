@@ -23,3 +23,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           envs: |
             VITE_API_URL=http://localhost:5000
+            NODE_ENV=production
