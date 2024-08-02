@@ -10,8 +10,8 @@ REPO_ID=$5
 BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
-ENVS="$9"
-COMMENT_ID=${10}
+# ENVS="$9"
+COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -112,7 +112,7 @@ echo "Running docker container..."
 
 # ENV_ARGS=$(echo "$ENVS" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
-echo "ENV_ARGS: $ENVS"
+# echo "ENV_ARGS: $ENVS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
