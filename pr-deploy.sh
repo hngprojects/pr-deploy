@@ -117,12 +117,6 @@ echo "ENV_ARGS: $ENVS"
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
-
-# function to check if serveo was successful
-# check_serveo() {
-#     grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}'
-# }
-# Set up tunneling using Serveo with a random high-numbered port
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
