@@ -49,12 +49,13 @@ comment() {
 
 cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
+    echo "PID: $PID"
 
     if [ -n "$PID" ]; then
-        echo "PID: $PID"
         kill -9 "$PID" || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
+    echo "Killed"
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
 
@@ -100,7 +101,6 @@ fi
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
-echo "Free Port: $FREE_PORT"
 
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
