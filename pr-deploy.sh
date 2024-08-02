@@ -8,13 +8,53 @@ PID_FILE="/srv/pr-deploy/nohup.json"
 COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 
 comment() {
-    echo "comment"
+    local status_message=$1
+    local preview_url=$2
 
+    local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
+    <table>
+    <thead>
+        <tr>
+        <th>Deployed By</th>
+        <th>Status</th>
+        <th>Preview URL</th>
+        <th>Updated At (UTC)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
+        <td>${status_message}</td>
+        <td><a href='${preview_url}'>Visit Preview</a></td>
+        <td>$(date +'%b %d, %Y %I:%M%p')</td>
+        </tr>  
+    </tbody>
+    </table>" '{body: $body}')
+
+    if [ -z "$COMMENT_ID" ]; then
+        # Create a new comment
+        COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+            -d "$comment_body" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
+        jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "$COMMENT_ID_FILE"
+    else
+        # Update the existing comment
+        curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
+            -d "$comment_body" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
+    fi
 }
 
 cleanup() {
-        echo "cleanup"
-
+    PID=$(jq -r --arg key $PR_ID '.[$key]' ${PID_FILE})
+    if [ -n $PID ]; then
+        kill -9 $PID
+        jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
+    fi
+    [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
+    [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
 }
 
 # Setup directory
