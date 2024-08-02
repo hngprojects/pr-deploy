@@ -116,7 +116,8 @@ ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',
 # echo "ENV_ARGS: $ENVS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 echo "ENV_ARGS: "$ENV_ARGS""
-sudo docker run -d -e VITE_API_URL=http://localhost:5000 -e NODE_ENV=production -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+ENV_ARGS2=-"e VITE_API_URL=http://localhost:5000 -e NODE_ENV=production"
+sudo docker run -d "$ENV_ARGS2" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
