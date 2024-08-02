@@ -112,6 +112,7 @@ echo "Running docker container..."
 
 # ENV_ARGS=$(echo "$ENVS" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
 ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
+echo "ENV_ARGS: $ENV_ARGS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 sudo docker run -d $ENV_ARGS -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
