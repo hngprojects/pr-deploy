@@ -39,7 +39,7 @@ comment() {
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
-        jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > $COMMENT_ID_FILE
+        jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "$COMMENT_ID_FILE"
     else
         # Update the existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
