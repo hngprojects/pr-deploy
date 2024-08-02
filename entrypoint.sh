@@ -8,4 +8,5 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr
 
 # Run the pr-deploy.sh script on the remote server.
 echo "REPO_URL: $REPO_URL"
-sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST 'REPO_URL=$REPO_URL; chmod +x /srv/pr-deploy.sh; /srv/pr-deploy.sh'
+sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST \
+  "REPO_URL='$REPO_URL'; chmod +x /srv/pr-deploy.sh; /srv/pr-deploy.sh"
