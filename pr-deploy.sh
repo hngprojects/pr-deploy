@@ -11,7 +11,7 @@ BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
 ENVS="$9"
-COMMENT_ID=${10}
+COMMENT_ID="${10}"
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -114,6 +114,7 @@ ENV_ARGS=$(echo "$ENVS" | tr ' ' '\n' | sed 's/^/-e /' | tr '\n' ' ')
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
 # echo "ENV_ARGS: $ENVS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
+echo "ENV_ARGS: $ENV_ARGS"
 sudo docker run -d "$ENV_ARGS" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
