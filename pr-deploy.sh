@@ -52,7 +52,7 @@ cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
 
     if [ -n "$PID" ]; then
-        kill -9 "$PID"
+        kill -9 "$PID" || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
 
@@ -63,6 +63,8 @@ cleanup() {
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
     sleep 1
 }
+
+whoami
 
 REPO_ID=$(curl -L \
   -H "Accept: application/vnd.github+json" \
