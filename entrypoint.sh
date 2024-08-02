@@ -69,7 +69,7 @@ if [ "$PR_ACTION" == "opened" ]; then
 fi
 
 echo "ENVS1=$ENVS"
-ENV_ARGS=$(echo "$ENVS" | tr '\n' ' ' )
+ENV_ARGS=$(echo "$ENVS" | tr '\n' ',' )
 echo "ENV_ARGS=$ENV_ARGS"
 
 # Copy the pr-deploy.sh script to the remote server.
