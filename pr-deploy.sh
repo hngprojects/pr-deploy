@@ -10,7 +10,8 @@ REPO_ID=$5
 BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
-COMMENT_ID=$9
+ENVS="${9}"
+COMMENT_ID="${10}"
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -64,8 +65,6 @@ fi
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-# # Setup directory
-# mkdir -p ${DEPLOY_FOLDER}/
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
 
@@ -109,19 +108,13 @@ echo "Building docker image..."
 sudo docker build -t $PR_ID -f $DOCKERFILE .
 
 echo "Running docker container..."
-sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+echo "$ENVS" | tr ',' '\n' > .env
+sudo docker run -d --env-file .env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
-
-# function to check if serveo was successful
-# check_serveo() {
-#     grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}'
-# }
-# Set up tunneling using Serveo with a random high-numbered port
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
-
 
 # Check if Serveo tunnel was set up successfully
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
@@ -132,7 +125,6 @@ if [ -n DEPLOYED_URL ]; then
     jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
 
 fi
-
 
 # Output the final JSON
 echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"

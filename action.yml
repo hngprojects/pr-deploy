@@ -27,7 +27,7 @@ inputs:
     description: Port to expose in the container
     required: true
   envs:
-    description: Environment variables to pass to the container
+    description: Environment variables to pass to the container (multi-line string)
     required: false
   github_token:
     description: GitHub token to authenticate API requests
