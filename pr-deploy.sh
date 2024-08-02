@@ -111,7 +111,8 @@ echo "Running docker container..."
 # sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 # ENV_ARGS=$(echo "$ENVS" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
-ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
+# ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
+ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 sudo docker run -d $ENV_ARGS -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
