@@ -68,9 +68,8 @@ if [ "$PR_ACTION" == "opened" ]; then
   comment "Deploying ⏳" "#"
 fi
 
-echo "ENVS1=$ENVS"
+# Formats the environment variables into a comma-separated string
 ENV_ARGS=$(echo "$ENVS" | tr '\n' ',' )
-echo "ENV_ARGS=$ENV_ARGS"
 
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
@@ -84,8 +83,6 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 # Parse the sanitized JSON
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
-ENV_ARGS=$(echo "$SANITIZED_OUTPUT" | jq -r '.ENV_ARGS')
-echo "ENV_ARGS="${ENV_ARGS}""
 
 if [ "$COMMENT_ID" == "null" ]; then
     # Checks if the action is opened

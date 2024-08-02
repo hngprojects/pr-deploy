@@ -108,24 +108,13 @@ echo "Building docker image..."
 sudo docker build -t $PR_ID -f $DOCKERFILE .
 
 echo "Running docker container..."
-# sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
-
-# ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-# ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
-# ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
-# echo "ENV_ARGS: $ENVS"
-# ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 echo "$ENVS" | tr ',' '\n' > .env
-# echo "ENV_ARGS: "$ENV_ARGS""
-# echo "$ENV_ARGS" > .env
-ENV_ARGS2=-"e VITE_API_URL=http://localhost:5000 -e NODE_ENV=production"
 sudo docker run -d --env-file .env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
-
 
 # Check if Serveo tunnel was set up successfully
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
@@ -137,6 +126,5 @@ if [ -n DEPLOYED_URL ]; then
 
 fi
 
-
 # Output the final JSON
-echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\", \"ENVS\": \"$ENV_ARGS\"}"
+echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
