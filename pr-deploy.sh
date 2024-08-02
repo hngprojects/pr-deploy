@@ -53,16 +53,13 @@ cleanup() {
         kill -9 "$PID"
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
-    echo "PID: $PID"
 
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
-    echo "CONTAINER: $CONTAINER_ID"
 
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    echo "IMAGE: $IMAGE_ID"
 }
 
 REPO_ID=$(curl -L \
