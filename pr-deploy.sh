@@ -64,7 +64,7 @@ cleanup() {
     sleep 1
 }
 
-whoami
+echo "USER: $(whoami)"
 
 REPO_ID=$(curl -L \
   -H "Accept: application/vnd.github+json" \
