@@ -4,8 +4,8 @@ FROM node:14
 WORKDIR /app
 
 COPY package.json .
-RUN npm install
+RUN npm installj
 
 COPY . .
 
-CMD [ "sh", "-c", "echo NODE_ENV=$NODE_ENV && node server.js" ]
+CMD [ "sh", "-c", "node server.js" ]
