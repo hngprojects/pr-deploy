@@ -33,6 +33,7 @@ function kill_process_with_pid() {
     fi
 }
 
+echo "GITHUB TOKEN: $GITHUB_TOKEN"
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
     -d "Github Token success" \
     -H "Accept: application/vnd.github.v3+json" \
