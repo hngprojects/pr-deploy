@@ -87,7 +87,7 @@ fi
 # Handle COMMENT_ID
 COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
 comment "Deploying ⏳" "#"
-apt update
+
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
     apt-get update
