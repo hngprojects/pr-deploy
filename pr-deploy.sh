@@ -12,24 +12,24 @@ comment() {
     local preview_url=$2
 
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
-    <table>
+<table>
     <thead>
         <tr>
-        <th>Deployed By</th>
-        <th>Status</th>
-        <th>Preview URL</th>
-        <th>Updated At (UTC)</th>
+            <th>Deployed By</th>
+            <th>Status</th>
+            <th>Preview URL</th>
+            <th>Updated At (UTC)</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-        <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
-        <td>${status_message}</td>
-        <td><a href='${preview_url}'>Visit Preview</a></td>
-        <td>$(date +'%b %d, %Y %I:%M%p')</td>
+            <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
+            <td>${status_message}</td>
+            <td><a href='${preview_url}'>Visit Preview</a></td>
+            <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
     </tbody>
-    </table>" '{body: $body}')
+</table>" '{body: $body}')
 
     if [ -z "$COMMENT_ID" ]; then
         # Create a new comment
@@ -48,7 +48,7 @@ comment() {
 }
 
 cleanup() {
-    PID=$(jq -r --arg key $PR_ID '.[$key]' ${PID_FILE})
+    PID=$(jq -r --arg key $PR_ID '.[$key]' // ""' ${PID_FILE})
     if [ -n $PID ]; then
         kill -9 $PID
         jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
