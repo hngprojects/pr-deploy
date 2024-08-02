@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-
+echo "REPO_URL!: $REPO_URL"
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
