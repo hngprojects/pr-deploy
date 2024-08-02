@@ -40,6 +40,8 @@ comment() {
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
         echo "comment id: $COMMENT_ID"
         jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "$COMMENT_ID_FILE"
+        echo "COMMENT_ID_FILE"
+        cat $COMMENT_ID_FILE
     else
         # Update the existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
