@@ -22,5 +22,5 @@ jobs:
           exposed_port: '5000'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           envs: |
-            SERVER_PASSWORD=${{ secrets.SERVER_PASSWORD }}
+            VITE_API_URL=${{ secrets.SERVER_PASSWORD }}
             NODE_ENV=${{ secrets.GITHUB_TOKEN }}
