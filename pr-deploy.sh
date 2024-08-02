@@ -50,7 +50,7 @@ comment() {
 cleanup() {
     PID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${PID_FILE})
     if [ -n $PID ]; then
-        kill -9 $PID
+        kill -9 $PID || true
         jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
     fi
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
