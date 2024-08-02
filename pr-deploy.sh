@@ -110,13 +110,14 @@ sudo docker build -t $PR_ID -f $DOCKERFILE .
 echo "Running docker container..."
 # sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
-ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+# ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 # ENV_ARGS=$(echo "VITE_API_URL=http://localhost:5000,NODE_ENV=production" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
 # echo "ENV_ARGS: $ENVS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
-echo "ENV_ARGS: "$ENV_ARGS""
-echo "$ENVS" > .env
+echo "$ENVS" | tr ',' '\n' > .env
+# echo "ENV_ARGS: "$ENV_ARGS""
+# echo "$ENV_ARGS" > .env
 ENV_ARGS2=-"e VITE_API_URL=http://localhost:5000 -e NODE_ENV=production"
 sudo docker run -d --env-file .env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
