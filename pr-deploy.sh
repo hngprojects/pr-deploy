@@ -120,7 +120,8 @@ cd $PR_ID/$CONTEXT
 
 # Build and run Docker Container
 sudo docker build -t $PR_ID -f $DOCKERFILE .
-sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+echo $ENVS > ${PR_ID}.env
+sudo docker run -d --env-file ${PR_ID}.env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
