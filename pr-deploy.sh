@@ -104,6 +104,7 @@ case $PR_ACTION in
         ;;
 esac
 
+echo "Branch: $BRANCH, REPO_URL: $REPO_URL, PR: $PR_ID"
 # Git clone and Docker operations
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
