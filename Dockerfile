@@ -8,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-CMD [ "sh", "-c",  "echo NODE_ENV=$NODE_ENV && node server.js" ]
+CMD [ "node", "server.js" ]
