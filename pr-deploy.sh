@@ -61,12 +61,12 @@ cleanup() {
 mkdir -p ${DEPLOY_FOLDER}/
 
 # Initialize the JSON file for nohup if it doesn't exist
-if [ ! -f $PID_FILE ]; then
+if [ ! -f "$PID_FILE" ]; then
     echo {} > $PID_FILE
 fi
 
 # Initialize the JSON file for comment if it doesn't exist
-if [ ! -f $COMMENT_ID_FILE ]; then
+if [ ! -f "$COMMENT_ID_FILE" ]; then
     echo {} > $COMMENT_ID_FILE
 fi
 
