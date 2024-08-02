@@ -69,7 +69,7 @@ if [ "$PR_ACTION" == "opened" ]; then
 fi
 
 echo "ENVS1=$ENVS"
-ENV_ARGS=$(echo "$ENVS" | tr '\n' ',' )
+ENV_ARGS=$(echo "$ENVS" | tr '\n' ' ' )
 echo "ENV_ARGS=$ENV_ARGS"
 
 # Copy the pr-deploy.sh script to the remote server.
@@ -84,6 +84,8 @@ SANITIZED_OUTPUT=$(echo "$REMOTE_OUTPUT" | sed 's/[[:cntrl:]]//g')
 # Parse the sanitized JSON
 COMMENT_ID=$(echo "$SANITIZED_OUTPUT" | jq -r '.COMMENT_ID')
 DEPLOYED_URL=$(echo "$SANITIZED_OUTPUT" | jq -r '.DEPLOYED_URL')
+ENV_ARGS=$(echo "$SANITIZED_OUTPUT" | jq -r '.ENV_ARGS')
+echo "ENV_ARGS=$ENV_ARGS"
 
 if [ "$COMMENT_ID" == "null" ]; then
     # Checks if the action is opened

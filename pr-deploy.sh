@@ -110,7 +110,7 @@ sudo docker build -t $PR_ID -f $DOCKERFILE .
 echo "Running docker container..."
 # sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
-ENV_ARGS=$(echo "$ENVS" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
+ENV_ARGS=$(echo "$ENVS" | tr ' ' '\n' | sed 's/^/-e /' | tr '\n' ' ')
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
 # echo "ENV_ARGS: $ENVS"
 # ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
@@ -134,4 +134,4 @@ fi
 
 
 # Output the final JSON
-echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
+echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\", \"ENVS\": \"$ENV_ARGS\"}"
