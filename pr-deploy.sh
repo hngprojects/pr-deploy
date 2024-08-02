@@ -49,13 +49,11 @@ comment() {
 
 cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
-    echo "PID: $PID"
 
     if [ -n "$PID" ]; then
         kill -9 "$PID" || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
-    echo "Killed"
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
 
@@ -112,6 +110,7 @@ case $PR_ACTION in
         [ "$PR_ACTION" == "closed" ] && comment "Terminated 🛑" "#" && exit 0
         ;;
 esac
+echo "PR ACTION: $PR_ACTION"
 
 # Git clone and Docker operations
 git clone -b $BRANCH $REPO_URL $PR_ID
