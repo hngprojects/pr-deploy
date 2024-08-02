@@ -10,8 +10,6 @@ comment() {
     local status_message=$1
     local preview_url=$2
 
-    echo "Status: $status_message"
-
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 <table>
     <thead>
@@ -38,9 +36,7 @@ comment() {
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
-        echo "comment id: $COMMENT_ID"
         jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$COMMENT_ID_FILE"
-        echo "COMMENT_ID_FILE"
         cat $COMMENT_ID_FILE
     else
         # Update the existing comment
@@ -88,7 +84,10 @@ fi
 
 # Handle COMMENT_ID
 COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
+echo "COMMENT ID: $COMMENT_ID"
 comment "Deploying ⏳" "#"
+
+echo "Commented"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -116,7 +115,6 @@ case $PR_ACTION in
         ;;
 esac
 
-echo "Branch: $BRANCH, REPO_URL: $REPO_URL, PR: $PR_ID"
 # Git clone and Docker operations
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
