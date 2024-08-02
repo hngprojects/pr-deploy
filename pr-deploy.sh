@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-echo "REPO_URL!: $REPO_URL"
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -10,6 +9,8 @@ COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 comment() {
     local status_message=$1
     local preview_url=$2
+
+    echo "Status: $status_message"
 
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 <table>
@@ -37,6 +38,7 @@ comment() {
             -d "$comment_body" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
+        echo "comment id: $COMMENT_ID"
         jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "$COMMENT_ID_FILE"
     else
         # Update the existing comment
@@ -51,6 +53,7 @@ cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
 
     if [ -n "$PID" ]; then
+        echo "PID: $PID"
         kill -9 "$PID" || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
