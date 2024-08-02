@@ -22,5 +22,5 @@ jobs:
           exposed_port: '5000'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           envs: |
-            VITE_API_URL=http://localhost:5000
-            NODE_ENV=production
+            VITE_API_URL=${{ secrets.SERVER_HOST }}
+            NODE_ENV=$GITHUB_TOKEN
