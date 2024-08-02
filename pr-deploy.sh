@@ -35,7 +35,7 @@ function kill_process_with_pid() {
 
 echo "GITHUB TOKEN: $GITHUB_TOKEN"
 curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
-    -d "Github Token success" \
+    -d '{"body": "Github Token success"}' \
     -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/repos/hngprojects/pr-deploy/issues/${PR_NUMBER}/comments"
 exit 0
