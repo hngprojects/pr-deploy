@@ -10,8 +10,8 @@ REPO_ID=$5
 BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
-ENVS="$9"
-COMMENT_ID=${10}
+# ENVS="$9"
+COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
 PID_FILE="/srv/pr-deploy/nohup.json"
