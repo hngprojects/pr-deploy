@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-PR_ID="pr_${REPO_ID}${PR_NUMBER}"
+
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
 COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
@@ -66,6 +66,12 @@ cleanup() {
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
 }
 
+REPO_ID=$(curl -L \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
+
+PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}/
