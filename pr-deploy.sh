@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+trap 'comment "Failed ❌" "#"; exit 1' ERR
 
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
