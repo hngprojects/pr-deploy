@@ -37,7 +37,6 @@ comment() {
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
         jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$COMMENT_ID_FILE"
-        cat $COMMENT_ID_FILE
     else
         # Update the existing comment
         curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
@@ -51,14 +50,13 @@ cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
 
     if [ -n "$PID" ]; then
-        kill -9 "$PID" || true
+        kill -9 "$PID"
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
 
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
 
-    echo "Container: $CONTAINER_ID"
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
 }
