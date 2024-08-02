@@ -10,6 +10,7 @@ COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 comment() {
     local status_message=$1
     local preview_url=$2
+    echo $status_message
 
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
 <table>
@@ -71,7 +72,7 @@ REPO_ID=$(curl -L \
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 
 # Setup directory
-mkdir -p ${DEPLOY_FOLDER}/
+mkdir -p ${DEPLOY_FOLDER}
 
 # Initialize the JSON file for nohup if it doesn't exist
 if [ ! -f "$PID_FILE" ]; then
