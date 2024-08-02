@@ -21,4 +21,4 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
   PR_ACTION='$PR_ACTION' \
   PR_NUMBER='$PR_NUMBER' \
   COMMENT_ID='$COMMENT_ID' \
-  echo "$SERVER_PASSWORD" | sudo -SE bash /srv/pr-deploy.sh"
+  bash -c 'echo \"$SERVER_PASSWORD\" | sudo -S bash /srv/pr-deploy.sh'"
