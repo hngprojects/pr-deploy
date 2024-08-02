@@ -2,58 +2,78 @@
 
 set -e
 
-CONTEXT=$1
-DOCKERFILE=$2
-EXPOSED_PORT=$3
-REPO_URL=$4
-REPO_ID=$5
-BRANCH=$6
-PR_ACTION=$7
-PR_NUMBER=$8
-COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
-# JSON file to store PIDs
+DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
 COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
-DEPLOY_FOLDER="/srv/pr-deploy"
 
-function handle_error {
-    echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}"
-    exit 1
+comment() {
+    local status_message=$1
+    local preview_url=$2
+
+    echo $status_message
+
+    local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
+<table>
+  <thead>
+    <tr>
+      <th>Deployed By</th>
+      <th>Status</th>
+      <th>Preview URL</th>
+      <th>Updated At (UTC)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
+      <td>${status_message}</td>
+      <td><a href='${preview_url}'>Visit Preview</a></td>
+      <td>$(date +'%b %d, %Y %I:%M%p')</td>
+    </tr>  
+  </tbody>
+</table>" '{body: $body}')
+
+    if [ -z "$COMMENT_ID" ]; then
+        # Create a new comment
+        COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+            -d "$comment_body" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
+        jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > $COMMENT_ID_FILE
+    else
+        # Update the existing comment
+        curl -s -H "Authorization: token $GITHUB_TOKEN" -X PATCH \
+            -d "$comment_body" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
 }
 
-# This helps to kill the process created by nohup using the process id
-function kill_process_with_pid() {
-    # serveo
-    local key=$1
-    ID=$(jq -r --arg key "$key" '.[$key]' "${PID_FILE}")
-    if [ -n $ID ]; then
-        kill -9 $ID
-        jq --arg key "$key" 'del(.[$key])' "${PID_FILE}" > tmp && mv tmp "${PID_FILE}"
+function cleanup() {
+    PID=$(jq -r --arg key $PR_ID '.[$key]' ${PID_FILE})
+    if [ -n $PID ]; then
+        kill -9 $PID
+        jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
     fi
+    [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
+    [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
 }
 
-echo "GITHUB TOKEN: $GITHUB_TOKEN"
-curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
-    -d '{"body": "Github Token success"}' \
-    -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/hngprojects/pr-deploy/issues/${PR_NUMBER}/comments"
-exit 0
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}/
 
 # Initialize the JSON file for nohup if it doesn't exist
-if [ ! -f "$PID_FILE" ]; then
-    echo "{}" > "$PID_FILE"
+if [ ! -f $PID_FILE ]; then
+    echo {} > $PID_FILE
 fi
 
 # Initialize the JSON file for comment if it doesn't exist
-if [ ! -f "$COMMENT_ID_FILE" ]; then
-    echo "{}" > "$COMMENT_ID_FILE"
+if [ ! -f $COMMENT_ID_FILE ]; then
+    echo {} > $COMMENT_ID_FILE
 fi
 
-# Set up trap to handle errors
-trap 'handle_error' ERR
+# Handle COMMENT_ID
+COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
+comment "Deploying ⏳" "#"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -73,19 +93,6 @@ FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); pri
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
 
-# Handle COMMENT_ID
-if [ -n "$COMMENT_ID" ]; then
-    # echo "$COMMENT_ID" > "${PR_ID}.txt"
-    jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > tmp.$$.json && mv tmp.$$.json "$COMMENT_ID_FILE"
-else
-    if [ -f "$COMMENT_ID_FILE" ]; then
-        COMMENT_ID=$(jq -r --arg key "$PR_ID" '.[$key]' "${COMMENT_ID_FILE}")
-
-    else
-        COMMENT_ID=""
-    fi
-fi
-
 # Get container and image IDs
 CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
 IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
@@ -93,44 +100,31 @@ IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
 # Handle different PR actions
 case $PR_ACTION in
     reopened | synchronize | closed)
-        # Stop and force remove containers if they exist
-        [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
-        
-        # Force remove images if they exist
-        [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
-
-        # Exit early for 'closed' action
-        [ "$PR_ACTION" == "closed" ] && echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"\"}" && kill_process_with_pid $PR_ID && exit 0
+        cleanup
+        [ "$PR_ACTION" == "closed" ] && comment "Terminated 🛑" "#" && exit 0
         ;;
 esac
 
 # Git clone and Docker operations
-echo "Git Clone ..."
 git clone -b $BRANCH $REPO_URL $PR_ID
-cd $PR_ID
+cd $PR_ID/$CONTEXT
 
-echo "Building docker image..."
+# Build and run Docker Container
 sudo docker build -t $PR_ID -f $DOCKERFILE .
-
-echo "Running docker container..."
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
-echo "Start SSH session..."
+# Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
-
-
-# Check if Serveo tunnel was set up successfully
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
 # update the nohup ids
-if [ -n DEPLOYED_URL ]; then
-    # jq --arg pid "$SERVEO_PID" '.serveo = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
-    jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > tmp.$$.json && mv tmp.$$.json "$PID_FILE"
-
+if [ -n $SERVEO_PID ]; then
+    jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "$PID_FILE"
 fi
 
-
-# Output the final JSON
-echo "{\"COMMENT_ID\": \"$COMMENT_ID\", \"DEPLOYED_URL\": \"$DEPLOYED_URL\"}"
+if [ -z "$DEPLOYED_URL" ]; then
+    comment "Failed ❌" "#" && exit 1
+fi
+comment "Deployed 🎉" $DEPLOYED_URL
