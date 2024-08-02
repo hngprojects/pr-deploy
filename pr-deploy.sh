@@ -33,7 +33,7 @@ function kill_process_with_pid() {
     fi
 }
 
-COMMENT_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
     -d "Github Token success" \
     -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/repos/hngprojects/pr-deploy/issues/${PR_NUMBER}/comments"
