@@ -10,7 +10,6 @@ REPO_ID=$5
 BRANCH=$6
 PR_ACTION=$7
 PR_NUMBER=$8
-# ENVS="$9"
 COMMENT_ID=$9
 PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 # JSON file to store PIDs
@@ -113,12 +112,6 @@ echo "Building docker image..."
 sudo docker build -t $PR_ID -f $DOCKERFILE .
 
 echo "Running docker container..."
-# sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
-
-# ENV_ARGS=$(echo "$ENVS" | tr ',' '\n' | sed 's/^/-e /' | tr '\n' ' ')
-# ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | tr '\n' ' ')
-# echo "ENV_ARGS: $ENVS"
-# ENV_ARGS=$(echo "$ENVS" | sed 's/^/-e /' | sed ':a;N;$!ba;s/\n/ -e /g')
 sudo docker run -d -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 echo "Start SSH session..."
