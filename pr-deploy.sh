@@ -48,7 +48,7 @@ comment() {
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${COMMENT_ID}" > /dev/null
 }
 
-function cleanup() {
+cleanup() {
     PID=$(jq -r --arg key $PR_ID '.[$key]' ${PID_FILE})
     if [ -n $PID ]; then
         kill -9 $PID
