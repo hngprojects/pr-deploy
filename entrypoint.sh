@@ -3,13 +3,6 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-function handle_error {
-    comment "Failed ❌" "#" && exit 1
-}
-
-# Set up trap to handle errors
-trap 'handle_error' ERR
-
 # Copy the pr-deploy.sh script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
