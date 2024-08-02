@@ -64,8 +64,6 @@ cleanup() {
     sleep 1
 }
 
-echo "USER: $(whoami)"
-
 REPO_ID=$(curl -L \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -89,17 +87,17 @@ fi
 # Handle COMMENT_ID
 COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
 comment "Deploying ⏳" "#"
-
+apt update
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
-    sudo apt-get update
-    sudo apt-get install docker.io -y
+    apt-get update
+    apt-get install docker.io -y
 fi
 
 # Ensure python is installed
 if [ ! command -v python3 &> /dev/null ]; then
-    sudo apt-get update
-    sudo apt-get install python3 -y
+    apt-get update
+    apt-get install python3 -y
 fi
 
 # Free port
@@ -121,9 +119,9 @@ git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
 # Build and run Docker Container
-sudo docker build -t $PR_ID -f $DOCKERFILE .
+docker build -t $PR_ID -f $DOCKERFILE .
 echo $ENVS > ${PR_ID}.env
-sudo docker run -d --env-file ${PR_ID}.env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+docker run -d --env-file ${PR_ID}.env -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
