@@ -39,7 +39,6 @@ comment() {
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments" | jq -r '.id')
         echo "comment id: $COMMENT_ID"
-        echo {} > "$COMMENT_ID"
         jq --arg pr_id "$PR_ID" --arg cid "$COMMENT_ID" '.[$pr_id] = $cid' "$COMMENT_ID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$COMMENT_ID_FILE"
         echo "COMMENT_ID_FILE"
         cat $COMMENT_ID_FILE
