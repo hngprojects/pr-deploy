@@ -114,7 +114,6 @@ case $PR_ACTION in
         [ "$PR_ACTION" == "closed" ] && comment "Terminated 🛑" "#" && exit 0
         ;;
 esac
-echo "PR ACTION: $PR_ACTION"
 
 # Git clone and Docker operations
 git clone -b $BRANCH $REPO_URL $PR_ID
@@ -131,9 +130,8 @@ sleep 3
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
 # update the nohup ids
-if [ -n $SERVEO_PID ]; then
-    jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "$PID_FILE"
-fi
+echo {} > $PID_FILE
+jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "$PID_FILE"
 
 if [ -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#" && exit 1
