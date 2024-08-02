@@ -59,7 +59,7 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    echo "IMAGE: $IMAGE_ID"
+    sleep 1
 }
 
 REPO_ID=$(curl -L \
