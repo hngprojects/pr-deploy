@@ -84,10 +84,7 @@ fi
 
 # Handle COMMENT_ID
 COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
-echo "COMMENT ID: $COMMENT_ID"
 comment "Deploying ⏳" "#"
-
-echo "Commented"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -103,6 +100,7 @@ fi
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
+echo "Free Port: $FREE_PORT"
 
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
