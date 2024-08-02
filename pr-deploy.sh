@@ -48,7 +48,7 @@ comment() {
 }
 
 cleanup() {
-    PID=$(jq -r --arg key $PR_ID '.[$key]' // ""' ${PID_FILE})
+    PID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${PID_FILE})
     if [ -n $PID ]; then
         kill -9 $PID
         jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
