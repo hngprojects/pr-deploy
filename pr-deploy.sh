@@ -130,8 +130,7 @@ sleep 3
 DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 
 # update the nohup ids
-echo {} > $PID_FILE
-jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "$PID_FILE"
+jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
 
 if [ -z "$DEPLOYED_URL" ]; then
     comment "Failed ❌" "#" && exit 1
