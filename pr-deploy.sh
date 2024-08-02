@@ -48,14 +48,19 @@ comment() {
 }
 
 cleanup() {
-    PID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${PID_FILE})
-    if [ -n $PID ]; then
-        kill -9 $PID || true
-        jq --arg key $PR_ID 'del(.[$key])' "${PID_FILE}" > ${PID_FILE}
+    PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
+
+    if [ -n "$PID" ]; then
+        kill -9 "$PID" || true
+        jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
-    [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 $CONTAINER_ID && sudo docker rm -f $CONTAINER_ID
-    [ -n "$IMAGE_ID" ] && sudo docker rmi -f $IMAGE_ID
+    CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
+    [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
+
+    IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
+    [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
 }
+
 
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}/
@@ -91,10 +96,6 @@ FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); pri
 
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
-
-# Get container and image IDs
-CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
-IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
 
 # Handle different PR actions
 case $PR_ACTION in
