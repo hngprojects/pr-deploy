@@ -57,6 +57,8 @@ cleanup() {
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
 
+    sleep 1
+
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
 }
