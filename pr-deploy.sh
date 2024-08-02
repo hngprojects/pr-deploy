@@ -64,8 +64,6 @@ fi
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-# # Setup directory
-# mkdir -p ${DEPLOY_FOLDER}/
 cd ${DEPLOY_FOLDER}
 rm -rf $PR_ID
 
