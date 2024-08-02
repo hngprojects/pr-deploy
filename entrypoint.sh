@@ -94,7 +94,6 @@ if [ "$COMMENT_ID" == "null" ]; then
     elif [ "$PR_ACTION" == "closed" ]; then
         comment "Terminated 🛑" "#"
     fi
-    echo "ENVS2=$ENVS"
   
     # Run the pr-deploy.sh script on the remote server and capture the output from the remote script
     NEW_REMOTE_OUTPUT=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST bash /srv/pr-deploy.sh $CONTEXT $DOCKERFILE $EXPOSED_PORT $REPO_URL $REPO_ID $GITHUB_HEAD_REF $PR_ACTION $PR_NUMBER "${ENV_ARGS}" $COMMENT_ID | tail -n 1)
