@@ -3,13 +3,11 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-echo "GITHUB RUN ID: ${GITHUB_RUN_ID}"
-exit 0
 # Copy the script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh
 
-# Run the script on the remote server with environment variables.
-sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST \
+# Run the script on the remote server and capture the output
+DEPLOYMENT_URL=$(sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST \
   "GITHUB_TOKEN='$GITHUB_TOKEN' \
   CONTEXT='$CONTEXT' \
   DOCKERFILE='$DOCKERFILE' \
@@ -18,13 +16,12 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
   REPO_OWNER='$REPO_OWNER' \
   REPO_NAME='$REPO_NAME' \
   REPO_URL='$REPO_URL' \
+  REPO_ID='$REPO_ID' \
   BRANCH='$GITHUB_HEAD_REF' \
   PR_ACTION='$PR_ACTION' \
   PR_NUMBER='$PR_NUMBER' \
-  bash -c 'echo \"$SERVER_PASSWORD\" | sudo -SE bash /srv/pr-deploy.sh'"
+  COMMENT_ID='$COMMENT_ID' \
+  bash /srv/pr-deploy.sh")
 
-# Copy the script to the remote server.
-sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST:/tmp/deployment_url.txt .
-
-# Read the deployment URL
-DEPLOYMENT_URL=$(cat deployment_url.txt)
+# Output the last line of the deployment URL
+echo "$DEPLOYMENT_URL" | tail -n 1

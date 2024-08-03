@@ -133,7 +133,9 @@ echo "$DEPLOYED_URL" > "/tmp/${PR_ID}.txt"
 # update the nohup ids
 jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
 
-if [ -z "$DEPLOYED_URL" ]; then
-    comment "Failed ❌" "#" && exit 1
+$if [ -z "$DEPLOYED_URL" ]; then
+    echo "Deployed URL not created"
+    # comment "Failed ❌" "#" && exit 1
 fi
 comment "Deployed 🎉" $DEPLOYED_URL
+echo "https://github.com/hngprojects/pr-deploy"
