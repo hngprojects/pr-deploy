@@ -16,7 +16,8 @@ inputs:
     required: true
   server_port:
     description: SSH port
-    required: true
+    required: false
+    default: 22
   context:
     description: Directory in the repository where the Dockerfile or start command is located
     required: false
