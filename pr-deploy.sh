@@ -137,5 +137,6 @@ if [ -z "$DEPLOYED_URL" ]; then
     echo "Deployed URL not created"
     # comment "Failed ❌" "#" && exit 1
 fi
+
 comment "Deployed 🎉" $DEPLOYED_URL
 echo "https://github.com/hngprojects/pr-deploy"
