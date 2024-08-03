@@ -49,6 +49,7 @@ runs:
       run: |
         ls
         docker build -t test:latest .
+        docker inspect test:latest
     # - id: execute-deployment
     #   name: Execute deployment
     #   run: |
