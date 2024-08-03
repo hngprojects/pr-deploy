@@ -114,7 +114,7 @@ cd $PR_ID/$CONTEXT
 # docker build -t $PR_ID -f $DOCKERFILE .
 gunzip "/tmp/${PR_ID}.tar.gz"
 docker load -i "/tmp/${PR_ID}.tar"
-rm /tmp/${PR_ID}.tar.gz
+rm /tmp/${PR_ID}.tar
 echo $ENVS > "/tmp/${PR_ID}.env"
 docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
