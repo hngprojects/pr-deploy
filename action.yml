@@ -44,6 +44,12 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Docker Build
+      shell: bash
+      run: |
+        PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
+        docker build -t $PR_ID .
+        docker save $PR_ID | gzip > "/tmp/${PR_ID}.tar.gz"
     - id: execute-deployment
       name: Execute deployment
       run: |
@@ -63,4 +69,5 @@ runs:
         REPO_NAME: ${{ github.event.repository.name }}
         PR_NUMBER: ${{ github.event.number }}
         PR_ACTION: ${{ github.event.action }}
+        PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         GITHUB_TOKEN: ${{ inputs.github_token }}

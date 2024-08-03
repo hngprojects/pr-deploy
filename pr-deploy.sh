@@ -60,15 +60,9 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    sleep 1
+    # rm -rf /tmp/${PR_ID}.*
+    rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
-
-REPO_ID=$(curl -L \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer $GITHUB_TOKEN" \
-  https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
-
-PR_ID="pr_${REPO_ID}${PR_NUMBER}"
 
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
@@ -103,8 +97,6 @@ fi
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 cd ${DEPLOY_FOLDER}
-rm -rf $PR_ID
-
 # Handle different PR actions
 case $PR_ACTION in
     reopened | synchronize | closed)
@@ -118,7 +110,10 @@ git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
 # Build and run Docker Container
-docker build -t $PR_ID -f $DOCKERFILE .
+# docker build -t $PR_ID -f $DOCKERFILE .
+gunzip "/tmp/${PR_ID}.tar.gz"
+docker load -i "/tmp/${PR_ID}.tar"
+rm /tmp/${PR_ID}.tar
 echo $ENVS > "/tmp/${PR_ID}.env"
 docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
