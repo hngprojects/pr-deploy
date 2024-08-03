@@ -49,7 +49,7 @@ runs:
       run: |
         PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         cd "${{ inputs.context }}"
-        docker build -t $PR_ID -f "${{ inputs.dockerfile }}"
+        docker build -t $PR_ID -f "${{ inputs.dockerfile }}" .
         docker save $PR_ID | gzip > "/tmp/${PR_ID}.tar.gz"
     - id: execute-deployment
       name: Execute deployment
