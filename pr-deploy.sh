@@ -60,7 +60,8 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    sleep 1
+    rm -rf /tmp/${PR_ID}.*
+    rm -rf /srv/${PR_ID}
 }
 
 # Setup directory
