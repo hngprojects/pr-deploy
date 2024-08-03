@@ -134,7 +134,7 @@ jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" >
 
 if [ -z "$PREVIEW_URL" ]; then
     echo "Preview URL not created"
-    PREVIEW_URL="${$(curl ifconfig.me)}:${FREE_PORT}"
+    PREVIEW_URL="$(curl ifconfig.me):${FREE_PORT}"
 fi
 
 comment "Deployed 🎉"
