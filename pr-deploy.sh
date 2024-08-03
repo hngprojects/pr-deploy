@@ -52,7 +52,7 @@ cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
 
     if [ -n "$PID" ]; then
-        kill -9 "$PID" || true
+	kill -9 "$PID" 2>/dev/null || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
 
@@ -133,7 +133,7 @@ echo "$DEPLOYED_URL" > "/tmp/${PR_ID}.txt"
 # update the nohup ids
 jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
 
-$if [ -z "$DEPLOYED_URL" ]; then
+if [ -z "$DEPLOYED_URL" ]; then
     echo "Deployed URL not created"
     # comment "Failed ❌" "#" && exit 1
 fi
