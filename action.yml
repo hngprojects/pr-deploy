@@ -47,33 +47,27 @@ runs:
     - name: Docker Build
       shell: bash
       run: |
-        docker images
-        docker build -t test .
-        docker images
-        docker save test | gzip > test.tar.gz
-        docker rmi test
-        docker images
-        gunzip test.tar.gz
-        docker load -i test.tar
-        docker images
-        ls
-    # - id: execute-deployment
-    #   name: Execute deployment
-    #   run: |
-    #     cd ${{ github.action_path }} && bash entrypoint.sh
-    #   shell: bash
-    #   env:
-    #     SERVER_HOST: ${{ inputs.server_host }}
-    #     SERVER_USERNAME: ${{ inputs.server_username }}
-    #     SERVER_PASSWORD: ${{ inputs.server_password }}
-    #     SERVER_PORT: ${{ inputs.server_port }}
-    #     CONTEXT: ${{ inputs.context }}
-    #     DOCKERFILE: ${{ inputs.dockerfile }}
-    #     EXPOSED_PORT: ${{ inputs.exposed_port }}
-    #     ENVS: ${{ inputs.envs }}
-    #     REPO_URL: ${{ github.event.repository.clone_url }}
-    #     REPO_OWNER: ${{ github.repository_owner }}
-    #     REPO_NAME: ${{ github.event.repository.name }}
-    #     PR_NUMBER: ${{ github.event.number }}
-    #     PR_ACTION: ${{ github.event.action }}
-    #     GITHUB_TOKEN: ${{ inputs.github_token }}
+        PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
+        docker build -t $PR_ID .
+        docker save $PR_ID | gzip > "${PR_ID}.tar.gz"
+    - id: execute-deployment
+      name: Execute deployment
+      run: |
+        cd ${{ github.action_path }} && bash entrypoint.sh
+      shell: bash
+      env:
+        SERVER_HOST: ${{ inputs.server_host }}
+        SERVER_USERNAME: ${{ inputs.server_username }}
+        SERVER_PASSWORD: ${{ inputs.server_password }}
+        SERVER_PORT: ${{ inputs.server_port }}
+        CONTEXT: ${{ inputs.context }}
+        DOCKERFILE: ${{ inputs.dockerfile }}
+        EXPOSED_PORT: ${{ inputs.exposed_port }}
+        ENVS: ${{ inputs.envs }}
+        REPO_URL: ${{ github.event.repository.clone_url }}
+        REPO_OWNER: ${{ github.repository_owner }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        PR_NUMBER: ${{ github.event.number }}
+        PR_ACTION: ${{ github.event.action }}
+        PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
+        GITHUB_TOKEN: ${{ inputs.github_token }}
