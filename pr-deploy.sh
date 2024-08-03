@@ -8,6 +8,11 @@ PID_FILE="/srv/pr-deploy/nohup.json"
 COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 
 comment() {
+    # Check if comments are enabled
+    if [ "$COMMENT" != true ]; then
+        return
+    fi
+    
     local status_message=$1
     echo $status_message
 
@@ -73,13 +78,15 @@ if [ ! -f "$PID_FILE" ]; then
 fi
 
 # Initialize the JSON file for comment if it doesn't exist
-if [ ! -f "$COMMENT_ID_FILE" ]; then
+if [ "$COMMENT" == true ] && [ ! -f "$COMMENT_ID_FILE" ]; then
     echo {} > $COMMENT_ID_FILE
 fi
 
 # Handle COMMENT_ID
-COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
-comment "Deploying ⏳"
+if [ "$COMMENT" == true ]; then
+    COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
+    comment "Deploying ⏳"
+fi
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
