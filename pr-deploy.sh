@@ -63,13 +63,6 @@ cleanup() {
     sleep 1
 }
 
-REPO_ID=$(curl -L \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer $GITHUB_TOKEN" \
-  https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME} | jq -r '.id')
-
-PR_ID="pr_${REPO_ID}${PR_NUMBER}"
-
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
@@ -118,7 +111,9 @@ git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
 # Build and run Docker Container
-docker build -t $PR_ID -f $DOCKERFILE .
+# docker build -t $PR_ID -f $DOCKERFILE .
+gunzip "${PR_ID}.tar.gz"
+docker load -i "${PR_ID}.tar"
 echo $ENVS > "/tmp/${PR_ID}.env"
 docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 
