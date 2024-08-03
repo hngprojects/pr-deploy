@@ -38,6 +38,7 @@ inputs:
   comment:
     description: A boolean value stating if the comments feature should be provided
     required: false
+    default: false
 
 outputs:
   preview-url:
@@ -68,6 +69,7 @@ runs:
         DOCKERFILE: ${{ inputs.dockerfile }}
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENVS: ${{ inputs.envs }}
+        COMMENT: ${{ inputs.comment }}
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_OWNER: ${{ github.repository_owner }}
         REPO_NAME: ${{ github.event.repository.name }}
