@@ -35,11 +35,16 @@ inputs:
     description: GitHub token to authenticate API requests
     required: true
 
+outputs:
+  preview-url:
+    description: "Preview URL"
+    value: ${{ steps.execute-deployment.outputs.preview-url }}
 
 runs:
   using: 'composite'
   steps:
-    - name: Run entrypoint.sh
+    - id: execure-deployment
+      name: Execute deployment
       run: |
         cd ${{ github.action_path }} && bash entrypoint.sh
       shell: bash

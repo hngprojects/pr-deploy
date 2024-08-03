@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-trap 'comment "Failed ❌" "#"; exit 1' ERR
+trap 'comment "Failed ❌" && exit 1' ERR
 
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -9,7 +9,6 @@ COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
 
 comment() {
     local status_message=$1
-    local preview_url=$2
     echo $status_message
 
     local comment_body=$(jq -n --arg body "<strong>Here are the latest updates on your deployment.</strong> Explore the action and ⭐ star our project for more insights! 🔍
@@ -26,7 +25,7 @@ comment() {
         <tr>
             <td><a href='https://github.com/marketplace/actions/pull-request-deploy'>PR Deploy</a></td>
             <td>${status_message}</td>
-            <td><a href='${preview_url}'>Visit Preview</a></td>
+            <td><a href='${PREVIEW_URL}'>Visit Preview</a></td>
             <td>$(date +'%b %d, %Y %I:%M%p')</td>
         </tr>  
     </tbody>
@@ -52,7 +51,7 @@ cleanup() {
     PID=$(jq -r --arg key "$PR_ID" '.[$key] // ""' "${PID_FILE}")
 
     if [ -n "$PID" ]; then
-	kill -9 "$PID" 2>/dev/null || true
+        kill -9 "$PID" 2>/dev/null || true
         jq --arg key "$PR_ID" 'del(.[$key])' "${PID_FILE}" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "${PID_FILE}"
     fi
 
@@ -86,7 +85,7 @@ fi
 
 # Handle COMMENT_ID
 COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
-comment "Deploying ⏳" "#"
+comment "Deploying ⏳"
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
@@ -110,7 +109,7 @@ rm -rf $PR_ID
 case $PR_ACTION in
     reopened | synchronize | closed)
         cleanup
-        [ "$PR_ACTION" == "closed" ] && comment "Terminated 🛑" "#" && exit 0
+        [ "$PR_ACTION" == "closed" ] && comment "Terminated 🛑" && exit 0
         ;;
 esac
 
@@ -127,16 +126,17 @@ docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name 
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
-DEPLOYED_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
-echo "$DEPLOYED_URL" > "/tmp/${PR_ID}.txt"
+PREVIEW_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+echo "$PREVIEW_URL" > "/tmp/${PR_ID}.txt"
 
 # update the nohup ids
 jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
 
-if [ -z "$DEPLOYED_URL" ]; then
-    echo "Deployed URL not created"
-    # comment "Failed ❌" "#" && exit 1
+if [ -z "$PREVIEW_URL" ]; then
+    echo "Preview URL not created"
+    # comment "Failed ❌" && exit 1
 fi
 
-comment "Deployed 🎉" $DEPLOYED_URL
+comment "Deployed 🎉"
 echo "https://github.com/hngprojects/pr-deploy"
+

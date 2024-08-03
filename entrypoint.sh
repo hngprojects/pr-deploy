@@ -3,9 +3,6 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Define a log file on the local machine
-LOCAL_LOG_FILE="deployment_output.log"
-
 # Copy the script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh >/dev/null
 
@@ -24,11 +21,7 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
   PR_ACTION='$PR_ACTION' \
   PR_NUMBER='$PR_NUMBER' \
   COMMENT_ID='$COMMENT_ID' \
-  bash /srv/pr-deploy.sh" | tee "$LOCAL_LOG_FILE"
+  bash /srv/pr-deploy.sh" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
-# Output the last line of the log file, assuming it contains the deployment URL
-DEPLOYMENT_URL=$(tail -n 1 "$LOCAL_LOG_FILE")
-
-# Output the deployment URL
-echo "Deployment URL: $DEPLOYMENT_URL"
-
+PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
+echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
