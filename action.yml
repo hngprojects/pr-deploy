@@ -47,9 +47,16 @@ runs:
     - name: Docker Build
       shell: bash
       run: |
+        docker images
+        docker build -t test .
+        docker images
+        docker save test | gzip > test.tar.gz
+        docker rmi test
+        docker images
+        gunzip test.tar.gz
+        docker load -i test.tar
+        docker images
         ls
-        docker build -t test:latest .
-        docker inspect test:latest
     # - id: execute-deployment
     #   name: Execute deployment
     #   run: |
