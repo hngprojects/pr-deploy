@@ -47,6 +47,7 @@ runs:
     - name: Docker Build
       shell: bash
       run: |
+        cd ${{ github.action_path }}
         docker build -t test:latest .
     # - id: execute-deployment
     #   name: Execute deployment
