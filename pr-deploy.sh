@@ -134,9 +134,8 @@ jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" >
 
 if [ -z "$PREVIEW_URL" ]; then
     echo "Preview URL not created"
-    # comment "Failed ❌" && exit 1
+    PREVIEW_URL="http://$(curl ifconfig.me):${FREE_PORT}"
 fi
 
 comment "Deployed 🎉"
-echo "https://github.com/hngprojects/pr-deploy"
-
+echo "$PREVIEW_URL"
