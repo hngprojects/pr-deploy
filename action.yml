@@ -35,6 +35,9 @@ inputs:
   github_token:
     description: GitHub token to authenticate API requests
     required: true
+  comments:
+    description: A boolean value stating if the comments feature should be provided
+    required: false
 
 outputs:
   preview-url:
