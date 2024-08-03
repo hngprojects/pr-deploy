@@ -61,7 +61,7 @@ cleanup() {
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
     # rm -rf /tmp/${PR_ID}.*
-    # rm -rf /srv/${PR_ID}
+    rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
 
 # Setup directory
@@ -97,8 +97,6 @@ fi
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 cd ${DEPLOY_FOLDER}
-rm -rf $PR_ID
-
 # Handle different PR actions
 case $PR_ACTION in
     reopened | synchronize | closed)
