@@ -38,12 +38,12 @@ inputs:
 outputs:
   preview-url:
     description: "Preview URL"
-    value: "https://lj32i89fs9f8s809sf.hng.tech"
+    value: ${{ steps.execute-deployment.outputs.preview-url }}
 
 runs:
   using: 'composite'
   steps:
-    - id: execure-deployment
+    - id: execute-deployment
       name: Execute deployment
       run: |
         cd ${{ github.action_path }} && bash entrypoint.sh
