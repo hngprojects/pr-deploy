@@ -69,6 +69,18 @@ cleanup() {
     rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
 
+# Ensure docker is installed
+if [ ! command -v docker &> /dev/null ]; then
+    apt-get update
+    apt-get install docker.io -y
+fi
+
+# Ensure python is installed
+if [ ! command -v python3 &> /dev/null ]; then
+    apt-get update
+    apt-get install python3 -y
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
@@ -86,18 +98,6 @@ fi
 if [ "$COMMENT" == true ]; then
     COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
     comment "Deploying ⏳"
-fi
-
-# Ensure docker is installed
-if [ ! command -v docker &> /dev/null ]; then
-    apt-get update
-    apt-get install docker.io -y
-fi
-
-# Ensure python is installed
-if [ ! command -v python3 &> /dev/null ]; then
-    apt-get update
-    apt-get install python3 -y
 fi
 
 # Free port
