@@ -74,42 +74,42 @@ if ! command -v docker &> /dev/null; then
     echo "Installing docker..."
     apt-get update
     apt-get install -y docker.io
-    systemctl start docker
-    systemctl enable docker
+    # systemctl start docker
+    # systemctl enable docker
 fi
 
 # Ensure python is installed
-if [ ! command -v python3 &> /dev/null ]; then
+if ! command -v python3 &> /dev/null; then
     apt-get update
     apt-get install -y python3
 fi
 
 # Ensure jq is installed
-if [ ! command -v jq &> /dev/null ]; then
+if ! command -v jq &> /dev/null; then
     apt-get update
     apt-get install -y jq
 fi
 
 # Ensure curl is installed
-if [ ! command -v curl &> /dev/null ]; then
+if ! command -v curl &> /dev/null; then
     apt-get update
     apt-get install -y curl
 fi
 
 # Ensure ssh is installed
-if [ ! command -v ssh &> /dev/null ]; then
+if ! command -v ssh &> /dev/null; then
     apt-get update
     apt-get install -y openssh-client
 fi
 
 # Ensure gunzip is installed
-if [ ! command -v gunzip &> /dev/null ]; then
+if ! command -v gunzip &> /dev/null; then
     apt-get update
     apt-get install -y gzip
 fi
 
 # Ensure git is installed
-if [ ! command -v git &> /dev/null ]; then
+if ! command -v git &> /dev/null; then
     apt-get update
     apt-get install -y git
 fi
