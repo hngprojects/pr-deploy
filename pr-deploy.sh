@@ -145,6 +145,7 @@ case $PR_ACTION in
 esac
 
 # Git clone and Docker operations
+rm -rf $PR_ID
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
