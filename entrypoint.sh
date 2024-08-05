@@ -14,6 +14,7 @@ sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr
 
 # Check if PR_ACTION is not 'closed'
 if [ "$PR_ACTION" != "closed" ]; then
+    # Copy the Image build zip file to the remote server
     sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
 fi
 
