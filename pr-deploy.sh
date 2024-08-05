@@ -99,6 +99,12 @@ if ! command -v ssh &> /dev/null; then
     apt-get install -y openssh-client
 fi
 
+# Ensure gunzip is installed
+if ! command -v gunzip &> /dev/null; then
+    apt-get update
+    apt-get install -y gzip
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
