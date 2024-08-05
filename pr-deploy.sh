@@ -65,7 +65,7 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    # rm -rf /tmp/${PR_ID}.*
+    rm /tmp/${PR_ID}.*
     rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
 
@@ -129,13 +129,18 @@ fi
 # Handle COMMENT_ID if only comments are enabled
 if [ "$COMMENT" == true ]; then
     COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
-    comment "Deploying ⏳"
+    case $PR_ACTION in
+    opened | reopened | synchronize)
+        comment "Deploying ⏳"
+        ;;
+    esac
 fi
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 cd ${DEPLOY_FOLDER}
+
 # Handle different PR actions
 case $PR_ACTION in
     reopened | synchronize | closed)
