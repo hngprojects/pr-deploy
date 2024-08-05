@@ -53,18 +53,14 @@ runs:
       run: |
         PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         cd "${{ inputs.context }}"
-        ls
         docker build -t $PR_ID -f "${{ inputs.dockerfile }}" .
         docker save $PR_ID | gzip > "/tmp/${PR_ID}.tar.gz"
-        echo "22222222222222"
-        ls /tmp
     - id: execute-deployment
       name: Execute deployment
       run: |
-        echo "111111111111"
-        ls /tmp
         echo "444444444"
         cd ${{ github.action_path }} && bash entrypoint.sh
+        ls /tmp
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
