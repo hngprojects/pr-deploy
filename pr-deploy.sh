@@ -93,6 +93,12 @@ if ! command -v curl &> /dev/null; then
     apt-get install -y curl
 fi
 
+# Ensure ssh is installed
+if ! command -v ssh &> /dev/null; then
+    apt-get update
+    apt-get install -y openssh-client
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
