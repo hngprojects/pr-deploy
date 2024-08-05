@@ -56,12 +56,11 @@ runs:
         ls
         docker build -t $PR_ID -f "${{ inputs.dockerfile }}" .
         docker save $PR_ID | gzip > "/tmp/${PR_ID}.tar.gz"
-        ls
+        echo "222222222222222222222222222"
+        ls /tmp
     - id: execute-deployment
       name: Execute deployment
       run: |
-        echo "1111111111111111111111"
-        ls
         cd ${{ github.action_path }} && bash entrypoint.sh
       shell: bash
       env:
