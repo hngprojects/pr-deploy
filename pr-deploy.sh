@@ -156,7 +156,6 @@ cd $PR_ID/$CONTEXT
 
 # Build and run Docker Container
 # docker build -t $PR_ID -f $DOCKERFILE .
-ls /tmp
 gunzip "/tmp/${PR_ID}.tar.gz"
 docker load -i "/tmp/${PR_ID}.tar"
 rm /tmp/${PR_ID}.tar
