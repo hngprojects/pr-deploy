@@ -49,6 +49,7 @@ runs:
   using: 'composite'
   steps:
     - name: Docker Build
+      if: github.event.action != 'closed'
       shell: bash
       run: |
         PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
