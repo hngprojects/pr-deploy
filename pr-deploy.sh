@@ -65,7 +65,7 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    rm /tmp/${PR_ID}.*
+    # rm /tmp/${PR_ID}.*
     rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
 
