@@ -65,48 +65,51 @@ cleanup() {
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
     [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
-    # rm -rf /tmp/${PR_ID}.*
+    rm /tmp/${PR_ID}.*
     rm -rf ${DEPLOY_FOLDER}/${PR_ID}
 }
 
 # Ensure docker is installed
-if [ ! command -v docker &> /dev/null ]; then
+if ! command -v docker &> /dev/null; then
+    echo "Installing docker..."
     apt-get update
     apt-get install -y docker.io
+    # systemctl start docker
+    # systemctl enable docker
 fi
 
 # Ensure python is installed
-if [ ! command -v python3 &> /dev/null ]; then
+if ! command -v python3 &> /dev/null; then
     apt-get update
     apt-get install -y python3
 fi
 
 # Ensure jq is installed
-if [ ! command -v jq &> /dev/null ]; then
+if ! command -v jq &> /dev/null; then
     apt-get update
     apt-get install -y jq
 fi
 
 # Ensure curl is installed
-if [ ! command -v curl &> /dev/null ]; then
+if ! command -v curl &> /dev/null; then
     apt-get update
     apt-get install -y curl
 fi
 
 # Ensure ssh is installed
-if [ ! command -v ssh &> /dev/null ]; then
+if ! command -v ssh &> /dev/null; then
     apt-get update
     apt-get install -y openssh-client
 fi
 
 # Ensure gunzip is installed
-if [ ! command -v gunzip &> /dev/null ]; then
+if ! command -v gunzip &> /dev/null; then
     apt-get update
     apt-get install -y gzip
 fi
 
 # Ensure git is installed
-if [ ! command -v git &> /dev/null ]; then
+if ! command -v git &> /dev/null; then
     apt-get update
     apt-get install -y git
 fi
@@ -127,13 +130,18 @@ fi
 # Handle COMMENT_ID if only comments are enabled
 if [ "$COMMENT" == true ]; then
     COMMENT_ID=$(jq -r --arg key $PR_ID '.[$key] // ""' ${COMMENT_ID_FILE})
-    comment "Deploying ⏳"
+    case $PR_ACTION in
+    opened | reopened | synchronize)
+        comment "Deploying ⏳"
+        ;;
+    esac
 fi
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 cd ${DEPLOY_FOLDER}
+
 # Handle different PR actions
 case $PR_ACTION in
     reopened | synchronize | closed)
@@ -143,6 +151,7 @@ case $PR_ACTION in
 esac
 
 # Git clone and Docker operations
+rm -rf $PR_ID
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
