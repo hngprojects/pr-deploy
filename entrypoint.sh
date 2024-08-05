@@ -3,6 +3,12 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Ensure sshpass is installed
+if [ ! command -v sshpass &> /dev/null ]; then
+    sudo apt-get update
+    sudo apt-get install -y sshpass
+fi
+
 # Copy the script to the remote server.
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/srv/pr-deploy.sh >/dev/null
 sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
