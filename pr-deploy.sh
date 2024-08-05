@@ -105,6 +105,12 @@ if ! command -v gunzip &> /dev/null; then
     apt-get install -y gzip
 fi
 
+# Ensure git is installed
+if ! command -v git &> /dev/null; then
+    apt-get update
+    apt-get install -y git
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
