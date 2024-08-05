@@ -81,6 +81,12 @@ if [ ! command -v python3 &> /dev/null ]; then
     apt-get install python3 -y
 fi
 
+# Ensure jq is installed
+if ! command -v jq &> /dev/null; then
+    apt-get update
+    apt-get install -y jq
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
