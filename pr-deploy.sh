@@ -73,8 +73,6 @@ if ! command -v docker &> /dev/null; then
     echo "Installing docker..."
     apt-get update
     apt-get install -y docker.io
-    # systemctl start docker
-    # systemctl enable docker
 fi
 
 # Ensure python is installed
@@ -154,8 +152,7 @@ rm -rf $PR_ID
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
-# Build and run Docker Container
-# docker build -t $PR_ID -f $DOCKERFILE .
+# Unzip the Image file and run Docker Container
 gunzip "/tmp/${PR_ID}.tar.gz"
 docker load -i "/tmp/${PR_ID}.tar"
 rm /tmp/${PR_ID}.tar
