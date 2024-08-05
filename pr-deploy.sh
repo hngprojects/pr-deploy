@@ -73,6 +73,8 @@ cleanup() {
 if [ ! command -v docker &> /dev/null ]; then
     apt-get update
     apt-get install -y docker.io
+    systemctl start docker
+    systemctl enable docker
 fi
 
 # Ensure python is installed
