@@ -74,8 +74,8 @@ if ! command -v docker &> /dev/null; then
     echo "Installing docker..."
     apt-get update
     apt-get install -y docker.io
-    # systemctl start docker
-    # systemctl enable docker
+    systemctl start docker
+    systemctl enable docker
 fi
 
 # Ensure python is installed
