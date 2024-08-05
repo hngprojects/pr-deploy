@@ -58,9 +58,7 @@ runs:
     - id: execute-deployment
       name: Execute deployment
       run: |
-        echo "444444444"
         cd ${{ github.action_path }} && bash entrypoint.sh
-        ls /tmp
       shell: bash
       env:
         SERVER_HOST: ${{ inputs.server_host }}
