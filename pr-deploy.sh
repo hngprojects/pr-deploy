@@ -87,6 +87,12 @@ if ! command -v jq &> /dev/null; then
     apt-get install -y jq
 fi
 
+# Ensure curl is installed
+if ! command -v curl &> /dev/null; then
+    apt-get update
+    apt-get install -y curl
+fi
+
 # Setup directory
 mkdir -p ${DEPLOY_FOLDER}
 
