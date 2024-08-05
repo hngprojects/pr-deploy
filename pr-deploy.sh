@@ -71,6 +71,7 @@ cleanup() {
 
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
+    echo "Installing docker..."
     apt-get update
     apt-get install -y docker.io
     systemctl start docker
