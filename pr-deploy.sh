@@ -72,13 +72,13 @@ cleanup() {
 # Ensure docker is installed
 if [ ! command -v docker &> /dev/null ]; then
     apt-get update
-    apt-get install docker.io -y
+    apt-get install -y docker.io
 fi
 
 # Ensure python is installed
 if [ ! command -v python3 &> /dev/null ]; then
     apt-get update
-    apt-get install python3 -y
+    apt-get install -y python3
 fi
 
 # Ensure jq is installed
