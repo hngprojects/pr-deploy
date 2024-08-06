@@ -165,7 +165,7 @@ nohupsi ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.ne
 SERVEO_PID=$!
 sleep 3
 PREVIEW_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
-echo "$PREVIEW_URL" > "/tmp/${PR_ID}.txt"
+echo "$PREVIEW_URLS" > "/tmp/${PR_ID}.txt"
 
 # update the nohup ids
 jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
