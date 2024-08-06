@@ -160,6 +160,7 @@ echo $ENVS > "/tmp/${PR_ID}.env"
 if [[ -z $HOST_VOLUME_PATH || -z $CONTAINER_VOLUME_PATH ]]; then
     docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
 else
+    # map volumes if host_volume_path and container_volume_path are provided
     docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT -v ${HOST_VOLUME_PATH}:${CONTAINER_VOLUME_PATH} --name $PR_ID $PR_ID
 fi
 
