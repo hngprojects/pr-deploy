@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
       - id: deploy
         name: Pull Request Deploy
-        uses: hngprojects/pr-deploy@dev_volume
+        uses: hngprojects/pr-deploy@1.1.8
         with:
           server_host: ${{ secrets.SERVER_HOST }}
           server_username: ${{ secrets.SERVER_USERNAME }}
