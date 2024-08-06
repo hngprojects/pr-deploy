@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-# trap 'comment "Failed ❌" && exit 1' ERR
 trap 'cleanup; comment "Failed ❌"; exit 1' ERR
 
 DEPLOY_FOLDER="/srv/pr-deploy"
@@ -159,9 +158,6 @@ docker load -i "/tmp/${PR_ID}.tar"
 rm /tmp/${PR_ID}.tar
 echo $ENVS > "/tmp/${PR_ID}.env"
 docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
-
-# Test if cleanup at deployment failure is working
-false
 
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
