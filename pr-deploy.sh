@@ -157,7 +157,12 @@ gunzip "/tmp/${PR_ID}.tar.gz"
 docker load -i "/tmp/${PR_ID}.tar"
 rm /tmp/${PR_ID}.tar
 echo $ENVS > "/tmp/${PR_ID}.env"
-docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+if [[ -z $HOST_VOLUME_PATH || -z $CONTAINER_VOLUME_PATH ]]; then
+    docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+else
+    # map volumes if host_volume_path and container_volume_path are provided
+    docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT -v ${HOST_VOLUME_PATH}:${CONTAINER_VOLUME_PATH} --name $PR_ID $PR_ID
+fi
 
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &

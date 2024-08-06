@@ -32,6 +32,12 @@ inputs:
   envs:
     description: Environment variables to pass to the container (multi-line string)
     required: false
+  host_volume_path:
+    description: This is the path on the host machine you want to map to the container
+    required: false
+  container_volume_path:
+    description: This is the path on the container you want to map to
+    required: false
   github_token:
     description: GitHub token to authenticate API requests
     required: true
@@ -76,5 +82,7 @@ runs:
         REPO_NAME: ${{ github.event.repository.name }}
         PR_NUMBER: ${{ github.event.number }}
         PR_ACTION: ${{ github.event.action }}
+        CONTAINER_VOLUME_PATH: ${{ inputs.container_volume_path }}
+        HOST_VOLUME_PATH: ${{ inputs.host_volume_path }}
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         GITHUB_TOKEN: ${{ inputs.github_token }}
