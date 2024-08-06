@@ -34,6 +34,8 @@ sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $S
   PR_ID='$PR_ID' \
   PR_ACTION='$PR_ACTION' \
   PR_NUMBER='$PR_NUMBER' \
+  HOST_VOLUME_PATH='$HOST_VOLUME_PATH' \
+  CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
   bash -c 'echo $SERVER_PASSWORD | sudo -SE bash /srv/pr-deploy.sh'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
