@@ -32,6 +32,12 @@ inputs:
   envs:
     description: Environment variables to pass to the container (multi-line string)
     required: false
+  host_volume_path:
+    description: This is the path on the host machine you want to map to the container
+    required: false
+  container_volume_path:
+    description: This is the path on the container you want to map to
+    required: false
   github_token:
     description: GitHub token to authenticate API requests
     required: true
