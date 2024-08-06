@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-trap 'comment "Failed ❌" && exit 1' ERR
+trap 'cleanup; comment "Failed ❌"; exit 1' ERR
 
 DEPLOY_FOLDER="/srv/pr-deploy"
 PID_FILE="/srv/pr-deploy/nohup.json"
@@ -178,6 +178,7 @@ if [ -z "$PREVIEW_URL" ]; then
     echo "Preview URL not created"
     PREVIEW_URL="http://$(curl ifconfig.me):${FREE_PORT}"
 fi
+
 comment "Deployed 🎉"
 rm -rf /tmp/${PR_ID}.*
 echo "$PREVIEW_URL"
