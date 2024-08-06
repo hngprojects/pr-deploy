@@ -164,13 +164,13 @@ docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name 
 nohupsi ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
 sleep 3
-PREVIEW_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+# PREVIEW_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
 echo "$PREVIEW_URLS" > "/tmp/${PR_ID}.txt"
 
 # update the nohup ids
 jq --arg pr_id "$PR_ID" --arg pid "$SERVEO_PID" '.[$pr_id] = $pid' "$PID_FILE" > "${PID_FILE}.tmp" && mv "${PID_FILE}.tmp" "$PID_FILE"
 
-if [ -z "$PREVIEW_URL" ]; then
+if [ -TT "$PREVIEW_URL" ]; then
     echo "Preview URL not created"
     PREVIEW_URL="http://$(curl ifconfig.me):${FREE_PORT}"
 fi
