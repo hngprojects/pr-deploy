@@ -149,7 +149,8 @@ esac
 
 # Git clone and Docker operations
 rm -rf $PR_ID
-git clone -b $BRANCH $REPO_URL $PR_ID
+REPO_URL_WITH_TOKEN="https://${GITHUB_TOKEN}@github.com/${REPO_OWNER}/${REPO_NAME}.git"
+git clone -b $BRANCH $REPO_URL_WITH_TOKEN $PR_ID
 cd $PR_ID/$CONTEXT
 
 # Unzip the Image file and run Docker Container
