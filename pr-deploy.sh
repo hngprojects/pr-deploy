@@ -3,9 +3,14 @@
 set -e
 trap 'cleanup; comment "Failed ❌"; exit 1' ERR
 
-DEPLOY_FOLDER="/srv/pr-deploy"
-PID_FILE="/srv/pr-deploy/nohup.json"
-COMMENT_ID_FILE="/srv/pr-deploy/comments.json"
+if [ "$USER" = "root" ]; then
+    DEPLOY_FOLDER="/srv/pr-deploy"
+else
+    DEPLOY_FOLDER="${HOME}/pr-deploy"
+fi
+
+PID_FILE="${DEPLOY_FOLDER}/nohup.json"
+COMMENT_ID_FILE="${DEPLOY_FOLDER}/comments.json"
 
 comment() {
     # Check if comments are enabled
