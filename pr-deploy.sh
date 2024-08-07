@@ -164,6 +164,8 @@ else
     docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT -v ${HOST_VOLUME_PATH}:${CONTAINER_VOLUME_PATH} --name $PR_ID $PR_ID
 fi
 
+docker ps
+
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
 SERVEO_PID=$!
