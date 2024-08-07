@@ -179,6 +179,7 @@ if [ -z "$PREVIEW_URL" ]; then
     PREVIEW_URL="http://$(curl ifconfig.me):${FREE_PORT}"
 fi
 
+echo "PORT: $FREE_PORT"
 comment "Deployed 🎉"
 rm -rf /tmp/${PR_ID}.*
 echo "$PREVIEW_URL"
