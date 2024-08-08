@@ -16,17 +16,36 @@ else
     SCRIPT_PATH="~/pr-deploy.sh"
 fi
 
-# Copy the script to the remote server.
-sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:$SCRIPT_PATH >/dev/null
+if [ -n "$SERVER_PRIVATE_KEY" ]; then
+    echo "$SERVER_PRIVATE_KEY" > private_key.pem
+    chmod 600 private_key.pem
 
-# Check if PR_ACTION is not 'closed'
-if [ "$PR_ACTION" != "closed" ]; then
-    # Copy the Image build zip file to the remote server
-    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+    SSH_CMD="ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
+    
+    # Copy the script to the remote server.
+    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:$SCRIPT_PATH >/dev/null
+
+    # Check if PR_ACTION is not 'closed'
+    if [ "$PR_ACTION" != "closed" ]; then
+        # Copy the Image build zip file to the remote server
+        scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+    fi
+    
+else
+    SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
+
+    # Copy the script to the remote server.
+    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:$SCRIPT_PATH >/dev/null
+    
+    # Check if PR_ACTION is not 'closed'
+    if [ "$PR_ACTION" != "closed" ]; then
+        # Copy the Image build zip file to the remote server
+        sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+    fi
 fi
 
 # Stream the output from the remote script to local terminal and save it to a log file
-sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST \
+$SSH_CMD \
   "GITHUB_TOKEN='$GITHUB_TOKEN' \
   CONTEXT='$CONTEXT' \
   DOCKERFILE='$DOCKERFILE' \
