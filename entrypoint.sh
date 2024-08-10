@@ -9,13 +9,6 @@ if ! command -v sshpass &> /dev/null; then
     sudo apt-get install -y sshpass
 fi
 
-# Check if the user is root
-if [ "$SERVER_USERNAME" = "root" ]; then
-    SCRIPT_PATH="/srv/pr-deploy.sh"
-else
-    SCRIPT_PATH="~/pr-deploy.sh"
-fi
-
 # Check if private key is provided, and if yes, set up a .pem file for auth
 if [ -n "$SERVER_PRIVATE_KEY" ]; then
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
@@ -24,7 +17,7 @@ if [ -n "$SERVER_PRIVATE_KEY" ]; then
     SSH_CMD="ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
     
     # Copy the script to the remote server.
-    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:$SCRIPT_PATH >/dev/null
+    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/pr-deploy/ >/dev/null
 
     # Check if PR_ACTION is not 'closed'
     if [ "$PR_ACTION" != "closed" ]; then
@@ -64,7 +57,7 @@ $SSH_CMD \
   HOST_VOLUME_PATH='$HOST_VOLUME_PATH' \
   CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
-  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash $SCRIPT_PATH'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash /tmp/pr-deploy/pr-deploy.sh'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
