@@ -67,7 +67,7 @@ $SSH_CMD \
   COMMENT_ID='$COMMENT_ID' \
   bash -c 'echo $SERVER_PASSWORD | sudo -SE bash $SCRIPT_PATH'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
-# Cleanup: delete private_key if even if an error occurs and the private key exist
+# Cleanup: delete private_key even if an error occurs and the private key exist
 trap 'rm -f private_key.pem' EXIT
 
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
