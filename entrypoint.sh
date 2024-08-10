@@ -4,7 +4,7 @@
 set -e
 
 # Ensure sshpass is installed
-if [ ! command -v sshpass &> /dev/null ]; then
+if ! command -v sshpass &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y sshpass
 fi
@@ -13,10 +13,12 @@ fi
 if [ "$SERVER_USERNAME" = "root" ]; then
     SCRIPT_PATH="/srv/pr-deploy.sh"
 else
-    SCRIPT_PATH="~/pr-deploy.sh"
+    SCRIPT_PATH="$HOME/pr-deploy.sh"
 fi
 
 # Check if private key is provided, and if yes, set up a .pem file for auth
+echo "private key here 111111111111111:    $SERVER_PRIVATE_KEY"
+
 if [ -n "$SERVER_PRIVATE_KEY" ]; then
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
     chmod 600 private_key.pem
@@ -71,5 +73,7 @@ if [ -f "private_key.pem" ]; then
     rm private_key.pem
 fi
 
+# Cleanup: delete private_key if an error occurs
+trap 'rm -f private_key.pem' EXIT
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
