@@ -4,7 +4,7 @@
 set -e
 
 # Ensure sshpass is installed
-if [ ! command -v sshpass &> /dev/null ]; then
+if ! command -v sshpass &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y sshpass
 fi
@@ -65,11 +65,6 @@ $SSH_CMD \
   CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
   bash -c 'echo $SERVER_PASSWORD | sudo -SE bash $SCRIPT_PATH'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
-
-# Cleanup: safely remove the private key file if it was created
-if [ -f "private_key.pem" ]; then
-    rm private_key.pem
-fi
 
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
