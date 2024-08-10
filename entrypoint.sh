@@ -19,7 +19,6 @@ fi
 # Check if private key is provided, and if yes, set up a .pem file for auth
 
 if [ -n "$SERVER_PRIVATE_KEY" ]; then
-    echo "private key here 22222222:    $SERVER_PRIVATE_KEY"
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
     chmod 600 private_key.pem
 
@@ -35,7 +34,7 @@ if [ -n "$SERVER_PRIVATE_KEY" ]; then
     fi
     
 else
-    echo "private key here 111111111111111:    $SERVER_PRIVATE_KEY"
+    echo "private key here 333333:    $SERVER_PRIVATE_KEY"
     SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
 
     # Copy the script to the remote server.
