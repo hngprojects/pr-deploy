@@ -16,6 +16,7 @@ else
     SCRIPT_PATH="~/pr-deploy.sh"
 fi
 
+# Check if private key is provided, and if yes, set up a .pem file for auth
 if [ -n "$SERVER_PRIVATE_KEY" ]; then
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
     chmod 600 private_key.pem
