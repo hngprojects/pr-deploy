@@ -149,6 +149,7 @@ esac
 
 # Git clone and Docker operations
 rm -rf $PR_ID
+REPO_URL="https://actions:${GITHUB_TOKEN}@${REPO_URL#https://}"
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
