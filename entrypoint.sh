@@ -59,7 +59,7 @@ $SSH_CMD \
   HOST_VOLUME_PATH='$HOST_VOLUME_PATH' \
   CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
-  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash /tmp/pr-deploy.sh'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash \"/tmp/pr-deploy.sh\"'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
