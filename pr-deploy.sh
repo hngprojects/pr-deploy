@@ -149,6 +149,7 @@ esac
 
 # Git clone and Docker operations
 rm -rf $PR_ID
+REPO_URL="https://actions:${GITHUB_TOKEN}@github.com/hngprojects/flask-example.git"
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID/$CONTEXT
 
