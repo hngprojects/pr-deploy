@@ -34,7 +34,6 @@ if [ -n "$SERVER_PRIVATE_KEY" ]; then
     fi
     
 else
-    echo "private key here 333333:    $SERVER_PRIVATE_KEY"
     SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
 
     # Copy the script to the remote server.
