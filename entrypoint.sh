@@ -13,7 +13,7 @@ fi
 if [ "$SERVER_USERNAME" = "root" ]; then
     SCRIPT_PATH="/srv/pr-deploy.sh"
 else
-    SCRIPT_PATH="$HOME/pr-deploy.sh"
+    SCRIPT_PATH="/home/$SERVER_USERNAME/pr-deploy.sh"
 fi
 
 # Check if private key is provided, and if yes, set up a .pem file for auth
