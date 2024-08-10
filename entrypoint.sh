@@ -4,7 +4,7 @@
 set -e
 
 # Ensure sshpass is installed
-if [ ! command -v sshpass &> /dev/null ]; then
+if ! command -v sshpass &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y sshpass
 fi
