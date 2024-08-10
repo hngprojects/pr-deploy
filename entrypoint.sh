@@ -3,6 +3,8 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+echo "REPOSITORY URL: $REPO_URL"
+
 # Ensure sshpass is installed
 if ! command -v sshpass &> /dev/null; then
     sudo apt-get update
