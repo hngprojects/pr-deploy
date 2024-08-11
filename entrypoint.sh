@@ -3,44 +3,33 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-echo "REPOSITORY URL: $REPO_URL"
-
-# Ensure sshpass is installed
-if ! command -v sshpass &> /dev/null; then
+# Ensure sshpass is installed if needed
+if ! command -v sshpass &> /dev/null && [ -z "$SERVER_PRIVATE_KEY" ]; then
     sudo apt-get update
     sudo apt-get install -y sshpass
 fi
 
-# Check if private key is provided, and if yes, set up a .pem file for auth
+# Set up SSH command and SCP options based on whether a private key or password is provided
 if [ -n "$SERVER_PRIVATE_KEY" ]; then
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
     chmod 600 private_key.pem
-
-    SSH_CMD="ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
-    
-    # Copy the script to the remote server.
-    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/ >/dev/null
-
-    # Check if PR_ACTION is not 'closed'
-    if [ "$PR_ACTION" != "closed" ]; then
-        # Copy the Image build zip file to the remote server
-        scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
-    fi
+    SSH_OPTIONS="-i private_key.pem -o StrictHostKeyChecking=no"
+    SSH_CMD="ssh $SSH_OPTIONS -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
+    SCP_CMD="scp $SSH_OPTIONS -P $SERVER_PORT"
 else
-    SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
-
-    # Copy the script to the remote server.
-    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/ >/dev/null
-
-    
-    # Check if PR_ACTION is not 'closed'
-    if [ "$PR_ACTION" != "closed" ]; then
-        # Copy the Image build zip file to the remote server
-        sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
-    fi
+    SSH_OPTIONS="-o StrictHostKeyChecking=no"
+    SSH_CMD="sshpass -p $SERVER_PASSWORD ssh $SSH_OPTIONS -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
+    SCP_CMD="sshpass -p $SERVER_PASSWORD scp $SSH_OPTIONS -P $SERVER_PORT"
 fi
 
-# Stream the output from the remote script to local terminal and save it to a log file
+# Copy the deployment script to the remote server
+$SCP_CMD pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/ >/dev/null
+
+# Copy the image build zip file if PR_ACTION is not 'closed'
+if [ "$PR_ACTION" != "closed" ]; then
+    $SCP_CMD "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+fi
+
 $SSH_CMD \
   "GITHUB_TOKEN='$GITHUB_TOKEN' \
   CONTEXT='$CONTEXT' \
