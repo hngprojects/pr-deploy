@@ -4,6 +4,7 @@
 set -e
 
 echo "REPOSITORY URL: $REPO_URL"
+COPY="/home/$SERVER_USERNAME/"
 
 # Ensure sshpass is installed
 if ! command -v sshpass &> /dev/null; then
@@ -16,27 +17,27 @@ if [ -n "$SERVER_PRIVATE_KEY" ]; then
     echo "$SERVER_PRIVATE_KEY" > private_key.pem
     chmod 600 private_key.pem
 
-    SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
+    SSH_CMD="ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
     
     # Copy the script to the remote server.
-    sshpass -p $SERVER_PASSWORD scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/ >/dev/null
+    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:"$COPY" >/dev/null
 
     # Check if PR_ACTION is not 'closed'
     if [ "$PR_ACTION" != "closed" ]; then
         # Copy the Image build zip file to the remote server
-        sshpass -p $SERVER_PASSWORD scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+        scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT "${COPY}${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"${COPY}${PR_ID}.tar.gz" >/dev/null
     fi
 else
     SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
 
     # Copy the script to the remote server.
-    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/ >/dev/null
+    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:"$COPY" >/dev/null
 
     
     # Check if PR_ACTION is not 'closed'
     if [ "$PR_ACTION" != "closed" ]; then
         # Copy the Image build zip file to the remote server
-        sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "/tmp/${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"/tmp/${PR_ID}.tar.gz" >/dev/null
+        sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT "${COPY}${PR_ID}.tar.gz" $SERVER_USERNAME@$SERVER_HOST:"${COPY}${PR_ID}.tar.gz" >/dev/null
     fi
 fi
 
@@ -59,7 +60,7 @@ $SSH_CMD \
   HOST_VOLUME_PATH='$HOST_VOLUME_PATH' \
   CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
-  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash \"/tmp/pr-deploy.sh\"'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash \"${COPY}pr-deploy.sh\"'" | tee "${COPY}preview_${GITHUB_RUN_ID}.txt"
 
-PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
+PREVIEW_URL=$(tail -n 1 "${COPY}preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
