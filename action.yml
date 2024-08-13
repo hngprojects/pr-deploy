@@ -63,11 +63,10 @@ runs:
             echo "Authentication failed"
             exit 1
           fi
-          
-          echo "${{ inputs.server_password }}" | sudo -SE bash << EOF
+
+          sudo -sE
           wget -qO- https://github.com/hngprojects/pr-deploy/raw/main/pr-deploy.sh > /tmp/pr-deploy
           bash /tmp/pr-deploy
-          EOF
         EOF
 
         echo "preview-url=https://github.com/hngprojects/pr-deploy" >> $GITHUB_OUTPUT
