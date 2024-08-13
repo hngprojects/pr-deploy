@@ -56,8 +56,7 @@ runs:
           REPO_URL='${{ github.event.repository.clone_url }}' \
           PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
           PR_ACTION='${{ github.event.action }}' \
-          GITHUB_TOKEN='${{ inputs.github_token }}' \
-          << 'EOF'
+          GITHUB_TOKEN='${{ inputs.github_token }}' << 'EOF'
           echo "${{ inputs.server_password }}" | sudo -S su
           sudo su
           whoami
