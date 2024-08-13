@@ -44,7 +44,7 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        sshpass -p ${{ env.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ env.PORT }} ${{ env.USERNAME }}@${{ env.HOST }} \
+        sshpass -p ${{ vars.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ vars.PORT }} ${{ vars.USERNAME }}@${{ vars.HOST }} \
           "GITHUB_TOKEN='${{ inputs.github_token }}' \
           CONTEXT='${{ inputs.context }}' \
           DOCKERFILE='${{ inputs.dockerfile }}' \
