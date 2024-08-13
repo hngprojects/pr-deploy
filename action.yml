@@ -54,6 +54,7 @@ runs:
           export EXPOSED_PORT="${{ inputs.exposed_port }}"
           export ENVS="${{ inputs.envs }}"
           export REPO_URL="${{ github.event.repository.clone_url }}"
+          export BRANCH="$GITHUB_HEAD_REF" \
           export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
           export PR_ACTION="${{ github.event.action }}"
           export GITHUB_TOKEN="${{ inputs.github_token }}"
@@ -65,7 +66,7 @@ runs:
           fi
 
           sudo -sE
-          wget -qO- https://github.com/hngprojects/pr-deploy/raw/main/pr-deploy.sh > /tmp/pr-deploy
+          wget -qO- https://github.com/hngprojects/pr-deploy/raw/dev/pr-deploy.sh > /tmp/pr-deploy
           bash /tmp/pr-deploy
         EOF
 
