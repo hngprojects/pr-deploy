@@ -48,9 +48,15 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        SSH_CMD="sshpass -p ${{ inputs.server_password }} ssh -o StrictHostKeyChecking=no -p 22 ${{ inputs.server_username }}@${{ inputs.server_host }}"
-        $SSH_CMD \
-          "GITHUB_TOKEN='${{ inputs.github_token }}' \
+        SSH_CMD="sshpass -p '${{ inputs.server_password }}' ssh -o StrictHostKeyChecking=no -p '${{ inputs.server_port }}' '${{ inputs.server_username }}@${{ inputs.server_host }}'"
+        $SSH_CMD << 'EOF'
+          cd
+          pwd
+          echo ${{ inputs.server_password }} | sudo -S su
+          cd
+          pwd
+          # apt update
+          GITHUB_TOKEN='${{ inputs.github_token }}' \
           CONTEXT='${{ inputs.context }}' \
           DOCKERFILE='${{ inputs.dockerfile }}' \
           EXPOSED_PORT='${{ inputs.exposed_port }}' \
@@ -58,7 +64,8 @@ runs:
           REPO_URL='${{ github.event.repository.clone_url }}' \
           PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
           PR_ACTION='${{ github.event.action }}' \
-          bash -c 'echo ${{ inputs.server_password }} | sudo -SE bash \"/tmp/pr-deploy.sh\"'" | tee "/tmp/preview_${{ github.run_id }}.txt"
+          /tmp/pr-deploy.sh
+EOF
 
         PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
         echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
