@@ -65,7 +65,7 @@ runs:
           PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
           PR_ACTION='${{ github.event.action }}' \
           /tmp/pr-deploy.sh
-EOF
+        EOF
 
         PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
         echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
