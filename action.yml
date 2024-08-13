@@ -42,7 +42,6 @@ runs:
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENVS: ${{ inputs.envs }}
         REPO_URL: ${{ github.event.repository.clone_url }}
-        REPO_OWNER: ${{ github.repository_owner }}
         REPO_NAME: ${{ github.event.repository.name }}
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         PR_ACTION: ${{ github.event.action }}
