@@ -48,7 +48,7 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        SSH_CMD="sshpass -p '${{ inputs.server_password }}' ssh -o StrictHostKeyChecking=no -p '${{ inputs.server_port }}' '${{ inputs.server_username }}@${{ inputs.server_host }}'"
+        SSH_CMD="sshpass -p ${{ inputs.server_password }} ssh -o StrictHostKeyChecking=no -p ${{ inputs.server_port }} ${{ inputs.server_username }}@${{ inputs.server_host }}"
         $SSH_CMD << 'EOF'
           cd
           pwd
