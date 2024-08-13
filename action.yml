@@ -49,11 +49,15 @@ runs:
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
-      with:
         HOST: ${{ secrets.HOST }}
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
         PORT: ${{ secrets.PORT }}
+      with:
+        HOST: $HOST
+        USERNAME: $USERNAME
+        PASSWORD: $PASSWORD
+        PORT: $PORT
         port: $PORT
         envs: CONTEXT, DOCKERFILE, EXPOSED_PORT, ENVS, REPO_URL, PR_ID, PR_ACTION, GITHUB_TOKEN
         script_stop: true
