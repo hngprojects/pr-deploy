@@ -67,7 +67,7 @@ runs:
           fi
 
           sudo -sE
-          wget -qO /tmp/pr-deploy.sh https://raw.githubusercontent.com/hngprojects/pr-deploy/dev/pr-deploy.sh
+          wget -qO /tmp/pr-deploy.sh "https://raw.githubusercontent.com/hngprojects/pr-deploy/dev/pr-deploy.sh?$(date +%s)"
           bash /tmp/pr-deploy.sh
         EOF
 
