@@ -7,7 +7,7 @@ cleanup_old_images() {
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && docker stop -t 0 "$CONTAINER_ID" && docker rm -f "$CONTAINER_ID"
 
-    IMAGE_IDS=$(docker images -q --filter "reference=${PR_ID}")
+    IMAGE_IDS=$(docker images -q --filter "label=pr_id=${PR_ID}")
     for IMAGE_ID in $IMAGE_IDS; do
         if [ "$IMAGE_ID" != "$NEW_IMAGE_ID" ]; then
             docker rmi -f "$IMAGE_ID"
@@ -30,7 +30,7 @@ cd $PR_ID
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 # Unzip the Image file and run Docker Container
-docker build -t $PR_ID -f $DOCKERFILE $CONTEXT
+docker build --label "pr_id=${PR_ID}" -t $PR_ID -f $DOCKERFILE $CONTEXT            
 
 # Clean up old images except for the newly created one
 cleanup_old_images
