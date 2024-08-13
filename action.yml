@@ -43,6 +43,7 @@ runs:
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
+      secrets:
         HOST: ${{ secrets.HOST }}
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
