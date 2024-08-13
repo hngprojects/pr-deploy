@@ -49,15 +49,16 @@ runs:
       shell: bash
       run: |
         sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" << 'EOF'
+          export GITHUB_TOKEN="${{ inputs.github_token }}"
           export CONTEXT="${{ inputs.context }}"
           export DOCKERFILE="${{ inputs.dockerfile }}"
           export EXPOSED_PORT="${{ inputs.exposed_port }}"
           export ENVS="${{ inputs.envs }}"
-          export REPO_URL="https://actions:${GITHUB_TOKEN}@${{ github.event.repository.clone_url#https:// }}"
+          REPO_URL="${{ github.event.repository.clone_url }}"
+          export REPO_URL="https://actions:${GITHUB_TOKEN}@${REPO_URL#https://}"
           export BRANCH="$GITHUB_HEAD_REF" \
           export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
           export PR_ACTION="${{ github.event.action }}"
-          export GITHUB_TOKEN="${{ inputs.github_token }}"
 
           echo "${{ inputs.server_password }}" | sudo -Sv >/dev/null 2>&1
           if [[ $? -ne 0 ]]; then
