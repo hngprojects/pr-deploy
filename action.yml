@@ -67,9 +67,10 @@ runs:
           fi
 
           sudo -sE
-          wget -qO- https://github.com/hngprojects/pr-deploy/raw/dev/pr-deploy.sh > /tmp/pr-deploy
-          cat /tmp/pr-deploy
-          bash /tmp/pr-deploy
+          rm pr-deploy.sh
+          wget -qO /tmp/pr-deploy.sh https://github.com/hngprojects/pr-deploy/raw/dev/pr-deploy.sh
+          cat /tmp/pr-deploy.sh
+          bash /tmp/pr-deploy.sh
         EOF
 
         echo "preview-url=https://github.com/hngprojects/pr-deploy" >> $GITHUB_OUTPUT
