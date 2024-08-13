@@ -22,15 +22,19 @@ inputs:
   github_token:
     description: GitHub token to authenticate API requests
     required: true
-  host_volume_path:
-    description: Host volume path on the server
+  server_host:
+    description: Hostname or IP address of the server
+    required: true
+  server_username:
+    description: Username for SSH connection
+    required: true
+  server_password:
+    description: Password for SSH connection
+    required: true
+  server_port:
+    description: SSH port of the server
     required: false
-  container_volume_path:
-    description: Container volume path
-    required: false
-  comment_id:
-    description: ID of the comment to update
-    required: false
+    default: 22
 
 outputs:
   preview-url:
@@ -44,7 +48,8 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        sshpass -p ${{ vars.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ vars.PORT }} ${{ vars.USERNAME }}@${{ vars.HOST }} \
+        SSH_CMD="sshpass -p '${{ inputs.server_password }}' ssh -o StrictHostKeyChecking=no -p '${{ inputs.server_port }}' '${{ inputs.server_username }}@${{ inputs.server_host }}'"
+        $SSH_CMD \
           "GITHUB_TOKEN='${{ inputs.github_token }}' \
           CONTEXT='${{ inputs.context }}' \
           DOCKERFILE='${{ inputs.dockerfile }}' \
@@ -53,7 +58,7 @@ runs:
           REPO_URL='${{ github.event.repository.clone_url }}' \
           PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
           PR_ACTION='${{ github.event.action }}' \
-          bash -c 'echo ${{ env.PASSWORD }} | sudo -SE pr-deploy'" | tee "/tmp/preview_${{ github.run_id }}.txt"
+          bash -c 'echo ${{ inputs.server_password }} | sudo -SE bash \"/tmp/pr-deploy.sh\"'" | tee "/tmp/preview_${{ github.run_id }}.txt"
 
         PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
         echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
