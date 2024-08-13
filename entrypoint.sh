@@ -18,16 +18,10 @@ $SSH_CMD \
   DOCKERFILE='$DOCKERFILE' \
   EXPOSED_PORT='$EXPOSED_PORT' \
   ENVS='$ENVS' \
-  COMMENT='$COMMENT' \
-  REPO_OWNER='$REPO_OWNER' \
-  REPO_NAME='$REPO_NAME' \
   REPO_URL='$REPO_URL' \
-  REPO_ID='$REPO_ID' \
   BRANCH='$GITHUB_HEAD_REF' \
   PR_ID='$PR_ID' \
   PR_ACTION='$PR_ACTION' \
-  PR_NUMBER='$PR_NUMBER' \
-  COMMENT_ID='$COMMENT_ID' \
   bash -c 'echo $SERVER_PASSWORD | sudo -SE pr-deploy | tee "/tmp/${PR_ID}.txt"
 
 PREVIEW_URL=$(tail -n 1 "/tmp/${PR_ID}.txt")
