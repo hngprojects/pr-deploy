@@ -58,16 +58,15 @@ runs:
           export PR_ACTION="${{ github.event.action }}"
           export GITHUB_TOKEN="${{ inputs.github_token }}"
 
-          echo "${{ inputs.server_password }}" | sudo -SEv >/dev/null 2>&1
+          echo "${{ inputs.server_password }}" | sudo -Sv >/dev/null 2>&1
           if [[ $? -ne 0 ]]; then
             echo "Authentication failed"
             exit 1
           fi
           
-          echo 'C4nin3?B4ll9n1=9' | sudo -S bash << EOF
+          echo "${{ inputs.server_password }}" | sudo -SE bash << EOF
           whoami
           echo "PR_ACTION: ${PR_ACTION}"
-          /tmp/pr-deploy.sh
           EOF
         EOF
 
