@@ -44,7 +44,7 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+        sshpass -p ${{ env.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ env.PORT }} ${{ env.USERNAME }}@${{ env.HOST }} \
           "GITHUB_TOKEN='${{ inputs.github_token }}' \
           CONTEXT='${{ inputs.context }}' \
           DOCKERFILE='${{ inputs.dockerfile }}' \
@@ -53,7 +53,7 @@ runs:
           REPO_URL='${{ github.event.repository.clone_url }}' \
           PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
           PR_ACTION='${{ github.event.action }}' \
-          bash -c 'echo ${{ secrets.PASSWORD }} | sudo -SE pr-deploy'" | tee "/tmp/preview_${{ github.run_id }}.txt"
+          bash -c 'echo ${{ env.PASSWORD }} | sudo -SE pr-deploy'" | tee "/tmp/preview_${{ github.run_id }}.txt"
 
         PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
         echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
