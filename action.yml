@@ -48,13 +48,15 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        SSH_CMD="sshpass -p ${{ inputs.server_password }} ssh -o StrictHostKeyChecking=no -p ${{ inputs.server_port }} ${{ inputs.server_username }}@${{ inputs.server_host }}"
-        $SSH_CMD << 'EOF'
+        sshpass -p ${{ inputs.server_password }} ssh -o StrictHostKeyChecking=no -p ${{ inputs.server_port }} ${{ inputs.server_username }}@${{ inputs.server_host }} << 'EOF'
           cd
           pwd
-          echo ${{ inputs.server_password }} | sudo -S su
+          whoami
+          echo "${{ inputs.server_password }}" | sudo -S su
+          sudo su
           cd
           pwd
+          whoami
           # apt update
           GITHUB_TOKEN='${{ inputs.github_token }}' \
           CONTEXT='${{ inputs.context }}' \
