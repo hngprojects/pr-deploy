@@ -15,7 +15,7 @@ if [ "$PR_ACTION" == "closed" ]; then
 fi
 
 # Update repository on the server
-echo $REPO_URL
+echo "Branch: ${BRANCH}"
 rm -rf $PR_ID
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID
