@@ -48,7 +48,8 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" << 'EOF'
+        sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" << 'EOF' | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+
           export GITHUB_TOKEN="${{ inputs.github_token }}"
           export CONTEXT="${{ inputs.context }}"
           export DOCKERFILE="${{ inputs.dockerfile }}"
@@ -56,7 +57,7 @@ runs:
           export ENVS="${{ inputs.envs }}"
           REPO_URL="${{ github.event.repository.clone_url }}"
           export REPO_URL="https://actions:${GITHUB_TOKEN}@${REPO_URL#https://}"
-          export BRANCH="${{ github.head_ref }}" \
+          export BRANCH="${{ github.head_ref }}"
           export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
           export PR_ACTION="${{ github.event.action }}"
 
@@ -72,4 +73,6 @@ runs:
           bash /tmp/pr-deploy.sh
         EOF
 
-        echo "preview-url=https://github.com/hngprojects/pr-deploy" >> $GITHUB_OUTPUT
+        PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
+        echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
+        echo "preview-url=${PREVIEW_URL}"
