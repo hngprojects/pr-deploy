@@ -1,5 +1,5 @@
 name: "Pull Request Deploy"
-description: "A github action to automate the deployment of pull requests"
+description: "A GitHub action to automate the deployment of pull requests"
 branding:
   icon: "cloud"
   color: "blue"
@@ -22,12 +22,15 @@ inputs:
   github_token:
     description: GitHub token to authenticate API requests
     required: true
-
-secrets:
-  HOST: ${{ secrets.HOST }}
-  USERNAME: ${{ secrets.USERNAME }}
-  PASSWORD: ${{ secrets.PASSWORD }}
-  PORT: ${{ secrets.PORT }}
+  host_volume_path:
+    description: Host volume path on the server
+    required: false
+  container_volume_path:
+    description: Container volume path
+    required: false
+  comment_id:
+    description: ID of the comment to update
+    required: false
 
 outputs:
   preview-url:
@@ -39,27 +42,18 @@ runs:
   steps:
     - id: deploy
       name: Deploy Pull Request
-      uses: appleboy/ssh-action@master
-      env:
-        CONTEXT: ${{ inputs.context }}
-        DOCKERFILE: ${{ inputs.dockerfile }}
-        EXPOSED_PORT: ${{ inputs.exposed_port }}
-        ENVS: ${{ inputs.envs }}
-        REPO_URL: ${{ github.event.repository.clone_url }}
-        PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
-        PR_ACTION: ${{ github.event.action }}
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        HOST: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USERNAME }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-        PORT: ${{ secrets.PORT }}
-      with:
-        HOST: $HOST
-        USERNAME: $USERNAME
-        PASSWORD: $PASSWORD
-        PORT: $PORT
-        port: $PORT
-        envs: CONTEXT, DOCKERFILE, EXPOSED_PORT, ENVS, REPO_URL, PR_ID, PR_ACTION, GITHUB_TOKEN
-        script_stop: true
-        script: |
-          pr-deploy
+      shell: bash
+      run: |
+        sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+          "GITHUB_TOKEN='${{ inputs.github_token }}' \
+          CONTEXT='${{ inputs.context }}' \
+          DOCKERFILE='${{ inputs.dockerfile }}' \
+          EXPOSED_PORT='${{ inputs.exposed_port }}' \
+          ENVS='${{ inputs.envs }}' \
+          REPO_URL='${{ github.event.repository.clone_url }}' \
+          PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
+          PR_ACTION='${{ github.event.action }}' \
+          bash -c 'echo ${{ secrets.PASSWORD }} | sudo -SE pr-deploy'" | tee "/tmp/preview_${{ github.run_id }}.txt"
+
+        PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
+        echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
