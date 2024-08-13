@@ -2,6 +2,8 @@
 
 set -e
 
+env
+
 if [ "$PR_ACTION" == "closed" ]; then
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && docker stop -t 0 "$CONTAINER_ID" && docker rm -f "$CONTAINER_ID"
@@ -15,13 +17,9 @@ if [ "$PR_ACTION" == "closed" ]; then
 fi
 
 # Update repository on the server
-if [ -d $PR_ID ]; then
-    cd $PR_ID
-    git pull origin $BRANCH
-else
-    git clone -b $BRANCH $REPO_URL $PR_ID
-    cd $PR_ID
-fi
+rm -rf $PR_ID
+git clone -b $BRANCH $REPO_URL $PR_ID
+cd $PR_ID
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
