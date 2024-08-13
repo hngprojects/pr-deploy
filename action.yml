@@ -5,54 +5,28 @@ branding:
   color: "blue"
 
 inputs:
-  server_host:
-    description: SSH host of the server
-    required: true
-  server_username: 
-    description: SSH username 
-    required: true
-  server_password:
-    description: SSH password 
-    required: false
-  server_port:
-    description: SSH port
-    required: false
-    default: 22
-  server_private_key:
-    description: SSH private key
-    required: false
   context:
-    description: Directory in the repository where the Dockerfile or start command is located
+    description: Directory in the repository where the Dockerfile is located
     required: false
-    default: "./"
+    default: "."
   dockerfile:
-    description: Path to the Dockerfile (optional)
+    description: Path to the Dockerfile
     required: false
-    default: "./Dockerfile"
+    default: "Dockerfile"
   exposed_port:
     description: Port to expose in the container
     required: true
   envs:
     description: Environment variables to pass to the container (multi-line string)
     required: false
-  host_volume_path:
-    description: This is the path on the host machine you want to map to the container
-    required: false
-  container_volume_path:
-    description: This is the path on the container you want to map to
-    required: false
   github_token:
     description: GitHub token to authenticate API requests
     required: true
-  comment:
-    description: A boolean value stating if the comments feature should be provided
-    required: false
-    default: false
 
 outputs:
   preview-url:
     description: "Preview URL"
-    value: ${{ steps.deploy.outputs.preview-url }}
+    value: ${{ steps.execute-deployment.outputs.preview-url }}
 
 runs:
   using: 'composite'
@@ -63,20 +37,13 @@ runs:
         cd ${{ github.action_path }} && bash entrypoint.sh
       shell: bash
       env:
-        SERVER_HOST: ${{ inputs.server_host }}
-        SERVER_USERNAME: ${{ inputs.server_username }}
-        SERVER_PASSWORD: ${{ inputs.server_password }}
-        SERVER_PORT: ${{ inputs.server_port }}
-        SERVER_PRIVATE_KEY: ${{ inputs.server_private_key }}
         CONTEXT: ${{ inputs.context }}
         DOCKERFILE: ${{ inputs.dockerfile }}
         EXPOSED_PORT: ${{ inputs.exposed_port }}
         ENVS: ${{ inputs.envs }}
-        COMMENT: ${{ inputs.comment }}
         REPO_URL: ${{ github.event.repository.clone_url }}
         REPO_OWNER: ${{ github.repository_owner }}
         REPO_NAME: ${{ github.event.repository.name }}
-        PR_NUMBER: ${{ github.event.number }}
-        PR_ACTION: ${{ github.event.action }}
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
+        PR_ACTION: ${{ github.event.action }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
