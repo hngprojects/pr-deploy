@@ -53,7 +53,7 @@ runs:
           export DOCKERFILE="${{ inputs.dockerfile }}"
           export EXPOSED_PORT="${{ inputs.exposed_port }}"
           export ENVS="${{ inputs.envs }}"
-          export REPO_URL="${{ github.event.repository.clone_url }}"
+          export REPO_URL="https://actions:${GITHUB_TOKEN}@${{ github.event.repository.clone_url#https:// }}"
           export BRANCH="$GITHUB_HEAD_REF" \
           export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
           export PR_ACTION="${{ github.event.action }}"
