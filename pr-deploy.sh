@@ -26,7 +26,7 @@ FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); pri
 # Unzip the Image file and run Docker Container
 docker build -t $PR_ID -f $DOCKERFILE $CONTEXT            
 echo $ENVS > "/tmp/${PR_ID}.env"
-docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --label $PR_ID $PR_ID
 
 # Start SSH Tunnel
 nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
