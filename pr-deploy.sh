@@ -2,8 +2,6 @@
 
 set -e
 
-env
-
 if [ "$PR_ACTION" == "closed" ]; then
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
     [ -n "$CONTAINER_ID" ] && docker stop -t 0 "$CONTAINER_ID" && docker rm -f "$CONTAINER_ID"
@@ -17,6 +15,7 @@ if [ "$PR_ACTION" == "closed" ]; then
 fi
 
 # Update repository on the server
+echo $REPO_URL
 rm -rf $PR_ID
 git clone -b $BRANCH $REPO_URL $PR_ID
 cd $PR_ID
