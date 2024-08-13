@@ -33,7 +33,7 @@ runs:
   steps:
     - id: deploy
       name: Deploy Pull Request
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@master
       env:
         CONTEXT: ${{ inputs.context }}
         DOCKERFILE: ${{ inputs.dockerfile }}
