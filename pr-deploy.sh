@@ -4,18 +4,15 @@ set -e
 
 if [ "$PR_ACTION" == "closed" ]; then
     CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
-    [ -n "$CONTAINER_ID" ] && sudo docker stop -t 0 "$CONTAINER_ID" && sudo docker rm -f "$CONTAINER_ID"
+    [ -n "$CONTAINER_ID" ] && docker stop -t 0 "$CONTAINER_ID" && docker rm -f "$CONTAINER_ID"
 
     IMAGE_ID=$(docker images -q --filter "reference=${PR_ID}")
-    [ -n "$IMAGE_ID" ] && sudo docker rmi -f "$IMAGE_ID"
+    [ -n "$IMAGE_ID" ] && docker rmi -f "$IMAGE_ID"
     
     rm -rf ~/${PR_ID}
     
     exit 0
 fi
-
-# Free port
-FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 # Update repository on the server
 if [ -d $PR_ID ]; then
@@ -25,6 +22,9 @@ else
     git clone -b $BRANCH $REPO_URL $PR_ID
     cd $PR_ID
 fi
+
+# Free port
+FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
 # Unzip the Image file and run Docker Container
 docker build -t $PR_ID -f $DOCKERFILE $CONTEXT            
