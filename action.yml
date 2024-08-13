@@ -48,22 +48,22 @@ runs:
       name: Deploy Pull Request
       shell: bash
       run: |
-        sshpass -p ${{ inputs.server_password }} ssh -o StrictHostKeyChecking=no -p ${{ inputs.server_port }} ${{ inputs.server_username }}@${{ inputs.server_host }} \
-         CONTEXT='${{ inputs.context }}' \
-          DOCKERFILE='${{ inputs.dockerfile }}' \
-          EXPOSED_PORT='${{ inputs.exposed_port }}' \
-          ENVS='${{ inputs.envs }}' \
-          REPO_URL='${{ github.event.repository.clone_url }}' \
-          PR_ID='pr_${{ github.event.repository.id }}_${{ github.event.number }}' \
-          PR_ACTION='${{ github.event.action }}' \
-          GITHUB_TOKEN='${{ inputs.github_token }}' << 'EOF'
+        sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" << 'EOF'
+          export CONTEXT="${{ inputs.context }}"
+          export DOCKERFILE="${{ inputs.dockerfile }}"
+          export EXPOSED_PORT="${{ inputs.exposed_port }}"
+          export ENVS="${{ inputs.envs }}"
+          export REPO_URL="${{ github.event.repository.clone_url }}"
+          export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
+          export PR_ACTION="${{ github.event.action }}"
+          export GITHUB_TOKEN="${{ inputs.github_token }}"
+
           echo "${{ inputs.server_password }}" | sudo -S su
-          sudo su
           whoami
           echo "PR_ACTION: ${PR_ACTION}"
-          echo "PR_ACTION: $PR_ACTIO"
+
           /tmp/pr-deploy.sh
         EOF
 
-        PREVIEW_URL=$(tail -n 1 "/tmp/preview_${{ github.run_id }}.txt")
+        PREVIEW_URL=$(sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" "tail -n 1 /tmp/preview_${{ github.run_id }}.txt")
         echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
