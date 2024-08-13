@@ -58,11 +58,17 @@ runs:
           export PR_ACTION="${{ github.event.action }}"
           export GITHUB_TOKEN="${{ inputs.github_token }}"
 
-          echo "${{ inputs.server_password }}" | sudo -S su
+          echo "${{ inputs.server_password }}" | sudo -SEv >/dev/null 2>&1
+          if [[ $? -ne 0 ]]; then
+            echo "Authentication failed"
+            exit 1
+          fi
+          
+          echo 'C4nin3?B4ll9n1=9' | sudo -S bash << EOF
           whoami
           echo "PR_ACTION: ${PR_ACTION}"
-
           /tmp/pr-deploy.sh
+          EOF
         EOF
 
         PREVIEW_URL=$(sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" "tail -n 1 /tmp/preview_${{ github.run_id }}.txt")
