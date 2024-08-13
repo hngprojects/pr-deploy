@@ -1,78 +1,54 @@
-name: "Pull Request Deploy"
-description: "A GitHub action to automate the deployment of pull requests"
-branding:
-  icon: "cloud"
-  color: "blue"
+#!/bin/bash
 
-inputs:
-  context:
-    description: Directory in the repository where the Dockerfile is located
-    required: false
-    default: .
-  dockerfile:
-    description: Path to the Dockerfile
-    required: false
-    default: Dockerfile
-  exposed_port:
-    description: Port to expose in the container
-    required: true
-  envs:
-    description: Environment variables to pass to the container (multi-line string)
-    required: false
-  github_token:
-    description: GitHub token to authenticate API requests
-    required: true
-  server_host:
-    description: Hostname or IP address of the server
-    required: true
-  server_username:
-    description: Username for SSH connection
-    required: true
-  server_password:
-    description: Password for SSH connection
-    required: true
-  server_port:
-    description: SSH port of the server
-    required: false
-    default: 22
+set -e
 
-outputs:
-  preview-url:
-    description: "Preview URL"
-    value: ${{ steps.deploy.outputs.preview-url }}
+# Function to clean up old containers and images
+cleanup_old_images() {
+    CONTAINER_ID=$(docker ps -aq --filter "name=${PR_ID}")
+    [ -n "$CONTAINER_ID" ] && docker stop -t 0 "$CONTAINER_ID" && docker rm -f "$CONTAINER_ID"
 
-runs:
-  using: 'composite'
-  steps:
-    - id: deploy
-      name: Deploy Pull Request
-      shell: bash
-      run: |
-        sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" << 'EOF' | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+    IMAGE_IDS=$(docker images -q --filter "label=pr_id=${PR_ID}")
+    for IMAGE_ID in $IMAGE_IDS; do
+        if [ "$IMAGE_ID" != "$NEW_IMAGE_ID" ]; then
+            docker rmi -f "$IMAGE_ID"
+        fi
+    done
+    rm -rf $PR_ID
+}
+cleanup_old_images
+if [ "$PR_ACTION" == "closed" ]; then
+    # Stop and remove container and image, and delete directory
+    cleanup_old_images
+    exit 0
+fi
 
-          export GITHUB_TOKEN="${{ inputs.github_token }}"
-          export CONTEXT="${{ inputs.context }}"
-          export DOCKERFILE="${{ inputs.dockerfile }}"
-          export EXPOSED_PORT="${{ inputs.exposed_port }}"
-          export ENVS="${{ inputs.envs }}"
-          REPO_URL="${{ github.event.repository.clone_url }}"
-          export REPO_URL="https://actions:${GITHUB_TOKEN}@${REPO_URL#https://}"
-          export BRANCH="${{ github.head_ref }}"
-          export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
-          export PR_ACTION="${{ github.event.action }}"
+# Clone repository on the server
+git clone -b $BRANCH $REPO_URL $PR_ID
+cd $PR_ID
 
-          echo "Branch: ${BRANCH}"
-          echo "${{ inputs.server_password }}" | sudo -Sv >/dev/null 2>&1
-          if [[ $? -ne 0 ]]; then
-            echo "Authentication failed"
-            exit 1
-          fi
+# Free port
+FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 
-          sudo -sE
-          wget -qO /tmp/pr-deploy.sh "https://raw.githubusercontent.com/hngprojects/pr-deploy/dev/pr-deploy.sh?$(date +%s)"
-          bash /tmp/pr-deploy.sh
-        EOF
+# Unzip the Image file and run Docker Container
+docker build --label "pr_id=${PR_ID}" -t $PR_ID -f $DOCKERFILE $CONTEXT            
 
-        PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
-        echo "preview-url=${PREVIEW_URL}"
-        echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
+# Clean up old images except for the newly created one
+NEW_IMAGE_ID=$(docker images -q $PR_ID)
+cleanup_old_images
+
+echo $ENVS > "/tmp/${PR_ID}.env"
+docker run -d --env-file "/tmp/${PR_ID}.env" -p $FREE_PORT:$EXPOSED_PORT --name $PR_ID $PR_ID
+
+# Start SSH Tunnel
+nohup ssh -tt -o StrictHostKeyChecking=no -R 80:localhost:$FREE_PORT serveo.net > serveo_output.log 2>&1 &
+SERVEO_PID=$!
+sleep 3
+PREVIEW_URL=$(grep "Forwarding HTTP traffic from" serveo_output.log | tail -n 1 | awk '{print $5}')
+echo "$PREVIEW_URL" > "/tmp/${PR_ID}.txt"
+
+if [ -z "$PREVIEW_URL" ]; then
+    echo "Preview URL not created"
+    PREVIEW_URL="http://$(curl ifconfig.me):${FREE_PORT}"
+fi
+
+echo "$PREVIEW_URL"
