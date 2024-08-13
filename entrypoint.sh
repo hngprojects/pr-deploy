@@ -22,7 +22,7 @@ $SSH_CMD \
   BRANCH='$GITHUB_HEAD_REF' \
   PR_ID='$PR_ID' \
   PR_ACTION='$PR_ACTION' \
-  bash -c 'echo $SERVER_PASSWORD | sudo -SE pr-deploy | tee "/tmp/${PR_ID}.txt"
+  bash -c 'sudo -SE pr-deploy' | tee "/tmp/${PR_ID}.txt"
 
 PREVIEW_URL=$(tail -n 1 "/tmp/${PR_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
