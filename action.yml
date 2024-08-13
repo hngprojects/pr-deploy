@@ -56,10 +56,11 @@ runs:
           export ENVS="${{ inputs.envs }}"
           REPO_URL="${{ github.event.repository.clone_url }}"
           export REPO_URL="https://actions:${GITHUB_TOKEN}@${REPO_URL#https://}"
-          export BRANCH="$GITHUB_HEAD_REF" \
+          export BRANCH="${{ github.head_ref }}" \
           export PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
           export PR_ACTION="${{ github.event.action }}"
 
+          echo "Branch: ${BRANCH}"
           echo "${{ inputs.server_password }}" | sudo -Sv >/dev/null 2>&1
           if [[ $? -ne 0 ]]; then
             echo "Authentication failed"
