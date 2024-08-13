@@ -67,7 +67,6 @@ runs:
           echo "${{ inputs.server_password }}" | sudo -SE bash << EOF
           whoami
           echo "PR_ACTION: ${PR_ACTION}"
-          exit 0
           EOF
         EOF
 
