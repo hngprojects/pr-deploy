@@ -65,8 +65,8 @@ runs:
           fi
           
           echo "${{ inputs.server_password }}" | sudo -SE bash << EOF
-          whoami
-          echo "PR_ACTION: ${PR_ACTION}"
+          wget -qO- https://github.com/hngprojects/pr-deploy/raw/main/pr-deploy.sh > /tmp/pr-deploy
+          bash /tmp/pr-deploy
           EOF
         EOF
 
