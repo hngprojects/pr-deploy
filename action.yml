@@ -67,8 +67,8 @@ runs:
           echo "${{ inputs.server_password }}" | sudo -SE bash << EOF
           whoami
           echo "PR_ACTION: ${PR_ACTION}"
+          exit 0
           EOF
         EOF
 
-        PREVIEW_URL=$(sshpass -p "${{ inputs.server_password }}" ssh -o StrictHostKeyChecking=no -p "${{ inputs.server_port }}" "${{ inputs.server_username }}@${{ inputs.server_host }}" "tail -n 1 /tmp/preview_${{ github.run_id }}.txt")
-        echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
+        echo "preview-url=https://github.com/hngprojects/pr-deploy" >> $GITHUB_OUTPUT
