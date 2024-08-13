@@ -67,7 +67,7 @@ runs:
           fi
 
           sudo -sE
-          rm -f pr-deploy.sh
+          rm -f /tmp/pr-deploy.sh
           wget O /tmp/pr-deploy.sh https://raw.githubusercontent.com/hngprojects/pr-deploy/dev/pr-deploy.sh
           cat /tmp/pr-deploy.sh
           bash /tmp/pr-deploy.sh
