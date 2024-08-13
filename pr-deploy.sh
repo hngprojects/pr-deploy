@@ -18,8 +18,8 @@ fi
 
 # Update repository on the server
 rm -rf $PR_ID
-git clone -b $BRANCH $REPO_URL $PR_ID
-cd $PR_ID
+# git clone -b $BRANCH $REPO_URL $PR_ID
+# cd $PR_ID
 
 # Free port
 FREE_PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
