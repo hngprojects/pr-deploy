@@ -52,20 +52,12 @@ inputs:
 outputs:
   preview-url:
     description: "Preview URL"
-    value: ${{ steps.execute-deployment.outputs.preview-url }}
+    value: ${{ steps.deploy.outputs.preview-url }}
 
 runs:
   using: 'composite'
   steps:
-    - name: Docker Build
-      if: github.event.action != 'closed'
-      shell: bash
-      run: |
-        PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
-        cd "${{ inputs.context }}"
-        docker build -t $PR_ID -f "${{ inputs.dockerfile }}" .
-        docker save $PR_ID | gzip > "/tmp/${PR_ID}.tar.gz"
-    - id: execute-deployment
+    - id: deploy
       name: Execute deployment
       run: |
         cd ${{ github.action_path }} && bash entrypoint.sh
@@ -86,7 +78,5 @@ runs:
         REPO_NAME: ${{ github.event.repository.name }}
         PR_NUMBER: ${{ github.event.number }}
         PR_ACTION: ${{ github.event.action }}
-        CONTAINER_VOLUME_PATH: ${{ inputs.container_volume_path }}
-        HOST_VOLUME_PATH: ${{ inputs.host_volume_path }}
         PR_ID: "pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         GITHUB_TOKEN: ${{ inputs.github_token }}
