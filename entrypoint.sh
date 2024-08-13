@@ -19,7 +19,7 @@ if [ -n "$SERVER_PRIVATE_KEY" ]; then
     SSH_CMD="ssh -i private_key.pem -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
     
     # Copy the script to the remote server.
-    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:~/pr-deploy/>/dev/null
+    scp -i private_key.pem -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/pr-deploy.sh>/dev/null
 
     # Check if PR_ACTION is not 'closed'
     if [ "$PR_ACTION" != "closed" ]; then
@@ -30,7 +30,7 @@ else
     SSH_CMD="sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_USERNAME@$SERVER_HOST"
 
     # Copy the script to the remote server.
-    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:~/pr-deploy/>/dev/null
+    sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no -P $SERVER_PORT pr-deploy.sh $SERVER_USERNAME@$SERVER_HOST:/tmp/pr-deploy.sh>/dev/null
 
     
     # Check if PR_ACTION is not 'closed'
@@ -59,7 +59,7 @@ $SSH_CMD \
   HOST_VOLUME_PATH='$HOST_VOLUME_PATH' \
   CONTAINER_VOLUME_PATH='$CONTAINER_VOLUME_PATH' \
   COMMENT_ID='$COMMENT_ID' \
-  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash \"~/pr-deploy/pr-deploy.sh\"'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
+  bash -c 'echo $SERVER_PASSWORD | sudo -SE bash \"/tmp/pr-deploy.sh\"'" | tee "/tmp/preview_${GITHUB_RUN_ID}.txt"
 
 PREVIEW_URL=$(tail -n 1 "/tmp/preview_${GITHUB_RUN_ID}.txt")
 echo "preview-url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
