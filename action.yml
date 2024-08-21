@@ -61,6 +61,7 @@ runs:
       if: github.event.action != 'closed'
       shell: bash
       run: |
+        whoami
         PR_ID="pr_${{ github.event.repository.id }}_${{ github.event.number }}"
         cd "${{ inputs.context }}"
         docker build -t $PR_ID -f "${{ inputs.dockerfile }}" .
